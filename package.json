@@ -1,0 +1,179 @@
+{
+  "name": "fdc-skills",
+  "displayName": "FDC Skills",
+  "description": "Manage FDC skills from a GitHub repository",
+  "version": "0.0.1",
+  "publisher": "fintelligence",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onView:fdcSkillsView"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "fdc-skills-explorer",
+          "title": "FDC Skills",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "fdc-skills-explorer": [
+        {
+          "id": "fdcSkillsView",
+          "name": "Skills",
+          "contextualTitle": "FDC Skills"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "fdcSkillsView",
+        "contents": "Loading skills from GitHub Enterprise...\n[Refresh Skills](command:fdcSkills.refresh)\n\nConfigure repository in [Settings](command:workbench.action.openSettings?%22fdcSkills.github%22)."
+      }
+    ],
+    "commands": [
+      {
+        "command": "fdcSkills.refresh",
+        "title": "Refresh Skills",
+        "icon": "$(refresh)",
+        "category": "FDC Skills"
+      },
+      {
+        "command": "fdcSkills.addSkill",
+        "title": "Add Skill",
+        "icon": "$(add)",
+        "category": "FDC Skills"
+      },
+      {
+        "command": "fdcSkills.editSkill",
+        "title": "Edit Skill",
+        "icon": "$(edit)",
+        "category": "FDC Skills"
+      },
+      {
+        "command": "fdcSkills.deleteSkill",
+        "title": "Delete Skill",
+        "icon": "$(trash)",
+        "category": "FDC Skills"
+      },
+      {
+        "command": "fdcSkills.configure",
+        "title": "Configure Repository",
+        "icon": "$(gear)",
+        "category": "FDC Skills"
+      },
+      {
+        "command": "fdcSkills.viewSkill",
+        "title": "View Skill Details",
+        "icon": "$(eye)",
+        "category": "FDC Skills"
+      },
+      {
+        "command": "fdcSkills.syncToGitHub",
+        "title": "Sync to GitHub",
+        "icon": "$(cloud-upload)",
+        "category": "FDC Skills"
+      },
+      {
+        "command": "fdcSkills.syncCopilotPrompts",
+        "title": "Sync Skills to Copilot Prompts",
+        "icon": "$(copilot)",
+        "category": "FDC Skills"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "fdcSkills.refresh",
+          "when": "view == fdcSkillsView",
+          "group": "navigation"
+        },
+        {
+          "command": "fdcSkills.addSkill",
+          "when": "view == fdcSkillsView",
+          "group": "navigation"
+        },
+        {
+          "command": "fdcSkills.syncToGitHub",
+          "when": "view == fdcSkillsView"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "fdcSkills.viewSkill",
+          "when": "view == fdcSkillsView && viewItem == skill",
+          "group": "inline"
+        },
+        {
+          "command": "fdcSkills.editSkill",
+          "when": "view == fdcSkillsView && viewItem == skill",
+          "group": "inline"
+        },
+        {
+          "command": "fdcSkills.deleteSkill",
+          "when": "view == fdcSkillsView && viewItem == skill",
+          "group": "inline"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "FDC Skills",
+      "properties": {
+        "fdcSkills.github.repoUrl": {
+          "type": "string",
+          "default": "",
+          "description": "GitHub Enterprise repository URL (e.g. https://github.example.com/org/repo.git)"
+        },
+        "fdcSkills.github.pat": {
+          "type": "string",
+          "default": "",
+          "description": "GitHub Personal Access Token (PAT)"
+        },
+        "fdcSkills.github.branch": {
+          "type": "string",
+          "default": "main",
+          "description": "GitHub branch name"
+        },
+        "fdcSkills.github.skillsPath": {
+          "type": "string",
+          "default": "skills",
+          "description": "Path to skills directory in the repository (use / for root)"
+        },
+        "fdcSkills.copilot.autoSync": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically sync skills to .github/prompts/ for Copilot Chat integration"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "@types/vscode": "^1.85.0",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.39.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.54.0"
+  },
+  "dependencies": {
+    "@octokit/rest": "^20.1.2"
+  }
+}
