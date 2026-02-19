@@ -83,28 +83,115 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
             return item;
         }
 
-        const skill = element.skill;
-        const item = new vscode.TreeItem(skill.name, vscode.TreeItemCollapsibleState.None);
-        item.tooltip = skill.description || skill.name;
-        item.description = skill.tags?.join(', ') || '';
-        item.iconPath = new vscode.ThemeIcon('symbol-method');
-        item.contextValue = 'skill';
-        item.command = {
-            command: 'fdcSkills.viewSkill',
-            title: 'View Skill',
-            arguments: [element],
-        };
-        return item;
+        if (element.type === 'skill') {
+            const skill = element.skill;
+            const item = new vscode.TreeItem(skill.name, vscode.TreeItemCollapsibleState.Collapsed);
+            item.tooltip = skill.description || skill.name;
+            item.description = skill.tags?.join(', ') || '';
+            item.iconPath = new vscode.ThemeIcon('symbol-method');
+            item.contextValue = 'skill';
+            return item;
+        }
+
+        if (element.type === 'file') {
+            const file = element as any;
+            const item = new vscode.TreeItem(file.name, vscode.TreeItemCollapsibleState.None);
+            item.tooltip = file.path;
+            item.iconPath = new vscode.ThemeIcon('file');
+            item.contextValue = 'file';
+            item.command = {
+                command: 'fdcSkills.openFile',
+                title: 'Open File',
+                arguments: [file],
+            };
+            return item;
+        }
+
+        return new vscode.TreeItem('Unknown');
     }
 
-    getChildren(element?: TreeNode): TreeNode[] {
+    async getChildren(element?: TreeNode): Promise<TreeNode[]> {
         if (!element) {
             return this.tree;
         }
         if (element.type === 'folder') {
             return element.children;
         }
+        if (element.type === 'skill') {
+            const skill = element.skill;
+            const localPath = skill.localPath || skill.id;
+            
+            const wsFolder = vscode.workspace.workspaceFolders?.[0];
+            if (!wsFolder) {
+                return [];
+            }
+
+            const skillFolderUri = vscode.Uri.joinPath(wsFolder.uri, '.github', 'skills', localPath);
+            
+            try {
+                const entries = await vscode.workspace.fs.readDirectory(skillFolderUri);
+                const children: TreeNode[] = [];
+
+                for (const [name, type] of entries) {
+                    if (name === 'SKILL.md') {
+                        // Skip SKILL.md as a separate node; we'll handle it specially if needed
+                        continue;
+                    }
+
+                    if (type === vscode.FileType.Directory) {
+                        const folderUri = vscode.Uri.joinPath(skillFolderUri, name);
+                        const folderChildren = await this.getFilesRecursively(folderUri);
+                        children.push({
+                            type: 'folder',
+                            name: name,
+                            path: `${localPath}/${name}`,
+                            children: folderChildren,
+                        });
+                    } else if (type === vscode.FileType.File) {
+                        children.push({
+                            type: 'file',
+                            name: name,
+                            path: vscode.Uri.joinPath(skillFolderUri, name),
+                        } as any);
+                    }
+                }
+
+                return children;
+            } catch (error) {
+                console.error(`Failed to read skill folder: ${error}`);
+                return [];
+            }
+        }
         return [];
+    }
+
+    private async getFilesRecursively(folderUri: vscode.Uri): Promise<TreeNode[]> {
+        const children: TreeNode[] = [];
+        try {
+            const entries = await vscode.workspace.fs.readDirectory(folderUri);
+            for (const [name, type] of entries) {
+                if (type === vscode.FileType.Directory) {
+                    const subFolderUri = vscode.Uri.joinPath(folderUri, name);
+                    const folderChildren = await this.getFilesRecursively(subFolderUri);
+                    children.push({
+                        type: 'folder',
+                        name: name,
+                        path: folderUri.path,
+                        children: folderChildren,
+                    });
+                } else {
+                    const fileUri = vscode.Uri.joinPath(folderUri, name);
+                    children.push({
+                        type: 'file',
+                        name: name,
+                        path: fileUri,
+                    } as any);
+                }
+            }
+        } catch (error) {
+            console.error(`Failed to read folder: ${error}`);
+        }
+        return children;
     }
 
     getParent(_element: TreeNode): vscode.ProviderResult<TreeNode> {

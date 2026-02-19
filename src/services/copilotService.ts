@@ -16,9 +16,29 @@ export interface SkillChange {
 	changedFiles: FileChange[];
 }
 
+export interface SyncTarget {
+	path: string;
+	enabled?: boolean;
+}
+
 export class CopilotService {
 	/**
-	 * Sync skills to .github/skills/ mirroring the repo folder structure.
+	 * Get configured sync targets from settings.
+	 * Returns array of enabled sync target paths.
+	 */
+	static getSyncTargets(): string[] {
+		const config = vscode.workspace.getConfiguration('fdcSkills.copilot');
+		const targets = config.get<SyncTarget[]>('syncTargets', [
+			{ path: '.github/skills', enabled: true },
+			{ path: '.claude/skills', enabled: true },
+		]);
+		return targets
+			.filter(target => target.enabled !== false) // enabled defaults to true
+			.map(target => target.path);
+	}
+
+	/**
+	 * Sync skills to configured target directories mirroring the repo folder structure.
 	 */
 	static async syncSkills(skills: Skill[]): Promise<void> {
 		const wsFolder = vscode.workspace.workspaceFolders?.[0];
@@ -26,7 +46,8 @@ export class CopilotService {
 			return;
 		}
 
-		for (const skillsDir of ALL_SKILLS_DIRS) {
+		const syncTargets = this.getSyncTargets();
+		for (const skillsDir of syncTargets) {
 			await this.syncSkillsToDir(wsFolder, skillsDir, skills);
 		}
 	}
@@ -106,8 +127,9 @@ export class CopilotService {
 		const changes: SkillChange[] = [];
 		const seen = new Set<string>();
 
-		// Check all skill directories for modifications (first match wins per skill)
-		for (const skillsDir of ALL_SKILLS_DIRS) {
+		// Check all configured sync targets for modifications (first match wins per skill)
+		const syncTargets = this.getSyncTargets();
+		for (const skillsDir of syncTargets) {
 			for (const skill of skills) {
 				if (seen.has(skill.id)) {
 					continue;

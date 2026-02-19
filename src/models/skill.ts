@@ -1,7 +1,9 @@
+import * as vscode from 'vscode';
+
 /**
  * Tree node types for hierarchical tree view
  */
-export type TreeNode = FolderNode | SkillNode;
+export type TreeNode = FolderNode | SkillNode | FileNode;
 
 export interface FolderNode {
     type: 'folder';
@@ -13,6 +15,12 @@ export interface FolderNode {
 export interface SkillNode {
     type: 'skill';
     skill: Skill;
+}
+
+export interface FileNode {
+    type: 'file';
+    name: string;
+    path: vscode.Uri;
 }
 
 /**

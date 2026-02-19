@@ -18,30 +18,33 @@ export function registerSkillCommands(
         })
     );
 
-    // View skill command — open the local .github/skills/{localPath}/SKILL.md
+    // View skill command — expand skill folder to show contents
     context.subscriptions.push(
         vscode.commands.registerCommand('fdcSkills.viewSkill', async (node: TreeNode) => {
             if (!node || node.type !== 'skill') {
                 vscode.window.showErrorMessage('No skill selected');
                 return;
             }
+            // Simply select and reveal the node; the tree will expand automatically
+            if (skillsTreeProvider['treeView']) {
+                skillsTreeProvider['treeView'].reveal(node, { select: true, focus: true, expand: true });
+            }
+        })
+    );
 
-            const skill = node.skill;
-            const localPath = skill.localPath || skill.id;
-
-            const wsFolder = vscode.workspace.workspaceFolders?.[0];
-            if (!wsFolder) {
-                vscode.window.showErrorMessage('No workspace folder open');
+    // Open file command — open a file in the skill folder
+    context.subscriptions.push(
+        vscode.commands.registerCommand('fdcSkills.openFile', async (file: any) => {
+            if (!file || !file.path) {
+                vscode.window.showErrorMessage('No file selected');
                 return;
             }
 
-            const fileUri = vscode.Uri.joinPath(wsFolder.uri, '.github', 'skills', localPath, 'SKILL.md');
             try {
-                await vscode.workspace.fs.stat(fileUri);
-                const document = await vscode.workspace.openTextDocument(fileUri);
+                const document = await vscode.workspace.openTextDocument(file.path);
                 await vscode.window.showTextDocument(document, { preview: true });
-            } catch {
-                vscode.window.showWarningMessage(`Skill file not found: .github/skills/${localPath}/SKILL.md — try refreshing.`);
+            } catch (error) {
+                vscode.window.showErrorMessage(`Failed to open file: ${error instanceof Error ? error.message : 'Unknown error'}`);
             }
         })
     );

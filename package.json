@@ -2,7 +2,7 @@
   "name": "fdc-skills",
   "displayName": "FDC Skills",
   "description": "Manage FDC skills from a GitHub repository",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "publisher": "fintelligence",
   "engines": {
     "vscode": "^1.85.0"
@@ -142,6 +142,36 @@
           "type": "boolean",
           "default": true,
           "description": "Automatically sync skills to .github/prompts/ for Copilot Chat integration"
+        },
+        "fdcSkills.copilot.syncTargets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string",
+                "description": "Target directory path for skill synchronization (e.g., .github/skills, .claude/skills)"
+              },
+              "enabled": {
+                "type": "boolean",
+                "description": "Enable or disable synchronization to this target"
+              }
+            },
+            "required": [
+              "path"
+            ]
+          },
+          "default": [
+            {
+              "path": ".github/skills",
+              "enabled": true
+            },
+            {
+              "path": ".claude/skills",
+              "enabled": true
+            }
+          ],
+          "description": "List of target directories for skill synchronization. Supports multiple sync targets with enable/disable toggle."
         }
       }
     }
