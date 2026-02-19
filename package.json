@@ -147,6 +147,7 @@
           "type": "array",
           "items": {
             "type": "object",
+            "title": "Sync Target",
             "properties": {
               "path": {
                 "type": "string",
@@ -154,12 +155,14 @@
               },
               "enabled": {
                 "type": "boolean",
-                "description": "Enable or disable synchronization to this target"
+                "description": "Enable or disable synchronization to this target",
+                "default": true
               }
             },
             "required": [
               "path"
-            ]
+            ],
+            "additionalProperties": false
           },
           "default": [
             {
@@ -171,7 +174,7 @@
               "enabled": true
             }
           ],
-          "description": "List of target directories for skill synchronization. Supports multiple sync targets with enable/disable toggle."
+          "markdownDescription": "Configure multiple target directories for skill synchronization.\n\nEach target can be individually enabled or disabled:\n- **path**: Directory path where skills will be synchronized\n- **enabled**: Toggle synchronization on/off for this target\n\nExample: Add `.claude/skills` or `.vs/skills` as additional sync targets"
         }
       }
     }
