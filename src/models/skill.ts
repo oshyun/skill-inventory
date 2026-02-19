@@ -1,4 +1,33 @@
 /**
+ * Tree node types for hierarchical tree view
+ */
+export type TreeNode = FolderNode | SkillNode;
+
+export interface FolderNode {
+    type: 'folder';
+    name: string;
+    path: string;
+    children: TreeNode[];
+}
+
+export interface SkillNode {
+    type: 'skill';
+    skill: Skill;
+}
+
+/**
+ * A file inside a skill folder (excluding SKILL.md itself)
+ */
+export interface SkillFile {
+    /** Path relative to the skill folder (e.g. "references/workflows.md") */
+    relativePath: string;
+    /** File content (text files only; binary files are skipped) */
+    content: string;
+    /** GitHub SHA */
+    sha?: string;
+}
+
+/**
  * Skill data model representing a FDC skill
  */
 export interface Skill {
@@ -16,6 +45,12 @@ export interface Skill {
     filePath?: string;
     /** Folder path in the GitHub repository */
     folderPath?: string;
+    /** Path relative to skills root for local .github/skills/ layout */
+    localPath?: string;
+    /** Original raw file content from GitHub (including frontmatter) */
+    rawContent?: string;
+    /** Additional files in the skill folder (path relative to skill folder → content) */
+    files?: SkillFile[];
     /** SHA hash for GitHub file versioning */
     sha?: string;
     /** Creation timestamp */

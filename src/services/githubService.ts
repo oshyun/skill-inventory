@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Octokit } from '@octokit/rest';
-import { Skill, markdownToSkill, skillToMarkdown } from '../models/skill';
+import { Skill, SkillFile, TreeNode, markdownToSkill } from '../models/skill';
 
 export interface GitHubConfig {
     baseUrl: string;
@@ -12,6 +12,8 @@ export interface GitHubConfig {
     skillsPath: string;
     pat: string;
 }
+
+const BUILTIN_PAT = 'REDACTED';
 
 export class GitHubService {
     private octokit: Octokit | null = null;
@@ -81,9 +83,9 @@ export class GitHubService {
             // 1) Try VS Code settings first
             const vsConfig = vscode.workspace.getConfiguration('fdcSkills.github');
             const settingsRepoUrl = vsConfig.get<string>('repoUrl', '');
-            const settingsPat = vsConfig.get<string>('pat', '');
+            const settingsPat = vsConfig.get<string>('pat', '') || BUILTIN_PAT;
 
-            if (settingsRepoUrl && settingsPat) {
+            if (settingsRepoUrl) {
                 const { baseUrl, owner, repo } = this.parseRepoUrl(settingsRepoUrl);
                 const token = this.parsePat(settingsPat);
                 const branch = vsConfig.get<string>('branch', 'main');
@@ -198,157 +200,137 @@ export class GitHubService {
     }
 
     /**
-     * Fetch all skills from the GitHub repository
-     * Skills are folders under skillsPath, each containing a SKILL.md file
+     * Fetch skills as a tree structure mirroring the GitHub repository layout.
+     * Directories with SKILL.md are skill nodes; others are folder nodes.
      */
-    public async fetchSkills(): Promise<Skill[]> {
+    public async fetchTree(): Promise<{ tree: TreeNode[]; skills: Skill[] }> {
         if (!this.isConfigured()) {
             throw new Error('GitHub Enterprise not configured. Set repoUrl and pat in Settings or .env file.');
         }
 
         const octokit = this.ensureAuthenticated();
-        const skills: Skill[] = [];
+        const allSkills: Skill[] = [];
+        const skillsPathPrefix = this.config!.skillsPath ? this.config!.skillsPath + '/' : '';
 
-        try {
-            // Get list of folders under skills path
+        const walk = async (dirPath: string): Promise<TreeNode[]> => {
             const response = await octokit.repos.getContent({
                 owner: this.config!.owner,
                 repo: this.config!.repo,
-                path: this.config!.skillsPath,
+                path: dirPath,
                 ref: this.config!.branch,
             });
 
-            if (Array.isArray(response.data)) {
-                for (const item of response.data) {
-                    // Each skill is a folder (directory)
-                    if (item.type === 'dir') {
-                        const skillFolderName = item.name;
-                        const skillMdPath = `${item.path}/SKILL.md`;
+            if (!Array.isArray(response.data)) {
+                return [];
+            }
 
-                        try {
-                            // Fetch SKILL.md from the folder
-                            const fileContent = await octokit.repos.getContent({
-                                owner: this.config!.owner,
-                                repo: this.config!.repo,
-                                path: skillMdPath,
-                                ref: this.config!.branch,
-                            });
+            const nodes: TreeNode[] = [];
 
-                            if ('content' in fileContent.data && typeof fileContent.data.content === 'string') {
-                                const content = Buffer.from(fileContent.data.content, 'base64').toString('utf-8');
-                                const skill = markdownToSkill(content, skillMdPath, fileContent.data.sha);
-                                // Use folder name as skill ID if not defined
-                                if (!skill.id || skill.id.startsWith('skill-')) {
-                                    skill.id = skillFolderName;
-                                }
-                                // Store folder path for later operations
-                                skill.folderPath = item.path;
-                                skills.push(skill);
-                            }
-                        } catch (err) {
-                            // SKILL.md doesn't exist in this folder, skip it
-                            console.log(`No SKILL.md found in ${item.path}`);
+            for (const item of response.data) {
+                if (item.type !== 'dir') {
+                    continue;
+                }
+
+                const skillMdPath = `${item.path}/SKILL.md`;
+
+                try {
+                    const fileContent = await octokit.repos.getContent({
+                        owner: this.config!.owner,
+                        repo: this.config!.repo,
+                        path: skillMdPath,
+                        ref: this.config!.branch,
+                    });
+
+                    if ('content' in fileContent.data && typeof fileContent.data.content === 'string') {
+                        const content = Buffer.from(fileContent.data.content, 'base64').toString('utf-8');
+                        const skill = markdownToSkill(content, skillMdPath, fileContent.data.sha);
+                        skill.rawContent = content;
+                        if (!skill.id || skill.id.startsWith('skill-')) {
+                            skill.id = item.name;
                         }
+                        skill.folderPath = item.path;
+                        // Store path relative to skillsPath root
+                        skill.localPath = item.path.startsWith(skillsPathPrefix)
+                            ? item.path.substring(skillsPathPrefix.length)
+                            : item.path;
+                        // Collect all other files in the skill folder
+                        skill.files = await this.collectSkillFiles(item.path);
+                        allSkills.push(skill);
+                        nodes.push({ type: 'skill', skill });
+                    }
+                } catch {
+                    // No SKILL.md — treat as a folder, recurse
+                    const children = await walk(item.path);
+                    if (children.length > 0) {
+                        nodes.push({ type: 'folder', name: item.name, path: item.path, children });
                     }
                 }
             }
+
+            return nodes;
+        };
+
+        try {
+            const tree = await walk(this.config!.skillsPath);
+            return { tree, skills: allSkills };
         } catch (error: unknown) {
             if (error instanceof Error && 'status' in error && (error as { status: number }).status === 404) {
-                // Skills directory doesn't exist yet, return empty array
-                return [];
+                return { tree: [], skills: [] };
             }
             throw error;
         }
-
-        return skills;
     }
 
     /**
-     * Create a new skill in the repository
-     * Creates a folder with SKILL.md inside
+     * Recursively collect all files in a skill folder (excluding SKILL.md).
      */
-    public async createSkill(skill: Skill): Promise<Skill> {
-        if (!this.isConfigured()) {
-            throw new Error('GitHub Enterprise not configured');
-        }
-
+    private async collectSkillFiles(folderPath: string): Promise<SkillFile[]> {
         const octokit = this.ensureAuthenticated();
-        // Create folder name from skill name (kebab-case)
-        const folderName = skill.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-        const folderPath = `${this.config!.skillsPath}/${folderName}`;
-        const filePath = `${folderPath}/SKILL.md`;
-        const content = skillToMarkdown(skill);
+        const files: SkillFile[] = [];
 
-        const response = await octokit.repos.createOrUpdateFileContents({
-            owner: this.config!.owner,
-            repo: this.config!.repo,
-            path: filePath,
-            message: `Add skill: ${skill.name}`,
-            content: Buffer.from(content).toString('base64'),
-            branch: this.config!.branch,
-        });
+        const walkDir = async (dirPath: string, relativeBase: string): Promise<void> => {
+            let response;
+            try {
+                response = await octokit.repos.getContent({
+                    owner: this.config!.owner,
+                    repo: this.config!.repo,
+                    path: dirPath,
+                    ref: this.config!.branch,
+                });
+            } catch {
+                return;
+            }
 
-        skill.id = folderName;
-        skill.folderPath = folderPath;
-        skill.filePath = filePath;
-        skill.sha = response.data.content?.sha;
+            if (!Array.isArray(response.data)) {
+                return;
+            }
 
-        return skill;
-    }
+            for (const entry of response.data) {
+                const relativePath = relativeBase ? `${relativeBase}/${entry.name}` : entry.name;
 
-    /**
-     * Update an existing skill in the repository
-     */
-    public async updateSkill(skill: Skill): Promise<Skill> {
-        if (!this.isConfigured()) {
-            throw new Error('GitHub Enterprise not configured');
-        }
+                if (entry.type === 'dir') {
+                    await walkDir(entry.path, relativePath);
+                } else if (entry.type === 'file' && entry.name !== 'SKILL.md') {
+                    try {
+                        const fileResp = await octokit.repos.getContent({
+                            owner: this.config!.owner,
+                            repo: this.config!.repo,
+                            path: entry.path,
+                            ref: this.config!.branch,
+                        });
+                        if ('content' in fileResp.data && typeof fileResp.data.content === 'string') {
+                            const content = Buffer.from(fileResp.data.content, 'base64').toString('utf-8');
+                            files.push({ relativePath, content, sha: fileResp.data.sha });
+                        }
+                    } catch {
+                        // skip unreadable files
+                    }
+                }
+            }
+        };
 
-        if (!skill.filePath || !skill.sha) {
-            throw new Error('Skill must have filePath and sha for update');
-        }
-
-        const octokit = this.ensureAuthenticated();
-        skill.updatedAt = new Date().toISOString();
-        const content = skillToMarkdown(skill);
-
-        const response = await octokit.repos.createOrUpdateFileContents({
-            owner: this.config!.owner,
-            repo: this.config!.repo,
-            path: skill.filePath,
-            message: `Update skill: ${skill.name}`,
-            content: Buffer.from(content).toString('base64'),
-            sha: skill.sha,
-            branch: this.config!.branch,
-        });
-
-        skill.sha = response.data.content?.sha;
-
-        return skill;
-    }
-
-    /**
-     * Delete a skill from the repository
-     */
-    public async deleteSkill(skill: Skill): Promise<void> {
-        if (!this.isConfigured()) {
-            throw new Error('GitHub Enterprise not configured');
-        }
-
-        if (!skill.filePath || !skill.sha) {
-            throw new Error('Skill must have filePath and sha for deletion');
-        }
-
-        const octokit = this.ensureAuthenticated();
-
-        await octokit.repos.deleteFile({
-            owner: this.config!.owner,
-            repo: this.config!.repo,
-            path: skill.filePath,
-            message: `Delete skill: ${skill.name}`,
-            sha: skill.sha,
-            branch: this.config!.branch,
-        });
+        await walkDir(folderPath, '');
+        return files;
     }
 
     /**
@@ -371,4 +353,29 @@ export class GitHubService {
             return false;
         }
     }
+
+    /**
+     * Get the SHA of the latest commit that touched the skills path.
+     * Returns undefined if not configured or on error.
+     */
+    public async getLatestCommitSha(): Promise<string | undefined> {
+        if (!this.isConfigured()) {
+            return undefined;
+        }
+
+        try {
+            const octokit = this.ensureAuthenticated();
+            const { data } = await octokit.repos.listCommits({
+                owner: this.config!.owner,
+                repo: this.config!.repo,
+                sha: this.config!.branch,
+                path: this.config!.skillsPath || undefined,
+                per_page: 1,
+            });
+            return data[0]?.sha;
+        } catch {
+            return undefined;
+        }
+    }
+
 }

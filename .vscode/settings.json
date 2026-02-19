@@ -7,5 +7,17 @@
 		"out": true // set this to false to include "out" folder in search results
 	},
 	// Turn off tsc task auto detection since we have the necessary tasks as npm scripts
-	"typescript.tsc.autoDetect": "off"
+	"typescript.tsc.autoDetect": "off",
+	"chat.tools.terminal.autoApprove": {
+		"/^code --install-extension /home1/irteam/users/sh/repos/skills-vscode-extention/fdc-skills-0\\.0\\.6\\.vsix --force 2>&1$/": {
+			"approve": true,
+			"matchCommandLine": true
+		},
+		"npx tsc": true,
+		"code": true,
+		"mkdir": true,
+		"mv": true,
+		"git add": true,
+		"git commit": true
+	}
 }
