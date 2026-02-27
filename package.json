@@ -67,14 +67,14 @@
       },
       {
         "command": "skillShelf.enableSync",
-        "title": "Enable Auto Sync",
+        "title": "자동 동기화 켜기 (현재: 꺼짐)",
         "icon": "$(sync-ignored)",
         "category": "Skill Shelf"
       },
       {
         "command": "skillShelf.disableSync",
-        "title": "Disable Auto Sync",
-        "icon": "$(sync)",
+        "title": "자동 동기화 끄기 (현재: 켜짐)",
+        "icon": "$(cloud-download)",
         "category": "Skill Shelf"
       },
       {
