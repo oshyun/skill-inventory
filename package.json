@@ -128,7 +128,7 @@
         },
         "skillShelf.sync.removeStaleSkills": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "markdownDescription": "동기화 시 원격 저장소에 없는 스킬을 로컬에서 삭제. 비활성화하면 원격에서 삭제된 스킬이 로컬 동기화 대상 폴더에 계속 남아있습니다."
         },
         "skillShelf.sync.targets.githubSkills": {

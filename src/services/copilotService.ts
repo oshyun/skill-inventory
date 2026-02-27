@@ -126,9 +126,16 @@ export class CopilotService {
 		// Remove stale directories (but don't recurse into skill roots)
 		const removeStale = vscode.workspace
 			.getConfiguration('skillShelf.sync')
-			.get<boolean>('removeStaleSkills', true);
+			.get<boolean>('removeStaleSkills', false);
 		if (removeStale) {
 			await cleanStale(skillsUri, '', desiredPaths, skillRoots);
+		} else {
+			const staleNames = await findStaleNames(skillsUri, desiredPaths);
+			if (staleNames.length > 0) {
+				vscode.window.showWarningMessage(
+					`로컬에 원격 저장소에 없는 스킬이 있습니다: ${staleNames.join(', ')}. 설정에서 removeStaleSkills를 켜면 자동 삭제됩니다.`
+				);
+			}
 		}
 	}
 
@@ -217,4 +224,27 @@ async function cleanStale(
 			}
 		}
 	}
+}
+
+async function findStaleNames(
+	dirUri: vscode.Uri,
+	desiredPaths: Set<string>,
+): Promise<string[]> {
+	let entries: [string, vscode.FileType][];
+	try {
+		entries = await vscode.workspace.fs.readDirectory(dirUri);
+	} catch {
+		return [];
+	}
+
+	const stale: string[] = [];
+	for (const [name, type] of entries) {
+		if (name === '.gitignore') {
+			continue;
+		}
+		if (type === vscode.FileType.Directory && !desiredPaths.has(name)) {
+			stale.push(name);
+		}
+	}
+	return stale;
 }
