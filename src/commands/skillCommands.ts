@@ -63,14 +63,14 @@ export function registerSkillCommands(
             const repoUrl = await vscode.window.showInputBox({
                 title: '저장소 설정 (1/2)',
                 prompt: 'GitHub 저장소 URL을 입력하세요',
-                placeHolder: 'https://github.com/org/repo.git',
+                placeHolder: 'https://github.com/org/repo',
                 ignoreFocusOut: true,
                 validateInput: (value) => {
                     if (!value.trim()) {
                         return '저장소 URL은 필수입니다.';
                     }
                     if (!/^https?:\/\/[^/]+\/[^/]+\/[^/]+/.test(value.trim())) {
-                        return '올바른 GitHub 저장소 URL을 입력해주세요. (예: https://github.com/org/repo.git)';
+                        return '올바른 GitHub 저장소 URL을 입력해주세요. (예: https://github.com/org/repo)';
                     }
                     return undefined;
                 },

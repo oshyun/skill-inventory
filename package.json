@@ -120,7 +120,7 @@
         "skillShelf.github.repoUrl": {
           "type": "string",
           "default": "",
-          "description": "GitHub 저장소 URL (예: https://github.com/org/repo.git 또는 https://github.example.com/org/repo.git)"
+          "description": "GitHub 저장소 URL (예: https://github.com/org/repo 또는 https://github.example.com/org/repo)"
         },
         "skillShelf.github.pat": {
           "type": "string",
