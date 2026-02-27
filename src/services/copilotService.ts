@@ -3,10 +3,10 @@ import { Skill } from '../models/skill';
 
 const SKILL_FILE = 'SKILL.md';
 
-export interface SyncTarget {
-	path: string;
-	enabled?: boolean;
-}
+const BUILTIN_TARGETS: { key: string; path: string }[] = [
+	{ key: 'githubSkills', path: '.github/skills' },
+	{ key: 'claudeSkills', path: '.claude/skills' },
+];
 
 export class CopilotService {
 	/**
@@ -14,14 +14,24 @@ export class CopilotService {
 	 * Returns array of enabled sync target paths.
 	 */
 	static getSyncTargets(): string[] {
-		const config = vscode.workspace.getConfiguration('fdcSkills.sync');
-		const targets = config.get<SyncTarget[]>('targets', [
-			{ path: '.github/skills', enabled: true },
-			{ path: '.claude/skills', enabled: true },
-		]);
-		return targets
-			.filter(target => target.enabled !== false) // enabled defaults to true
-			.map(target => target.path);
+		const config = vscode.workspace.getConfiguration('fdcSkills.sync.targets');
+		const paths: string[] = [];
+
+		for (const { key, path } of BUILTIN_TARGETS) {
+			if (config.get<boolean>(key, true)) {
+				paths.push(path);
+			}
+		}
+
+		const custom = config.get<string[]>('custom', []);
+		for (const p of custom) {
+			const trimmed = p.trim();
+			if (trimmed && !paths.includes(trimmed)) {
+				paths.push(trimmed);
+			}
+		}
+
+		return paths;
 	}
 
 	/**

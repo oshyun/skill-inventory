@@ -148,38 +148,23 @@
           "default": true,
           "description": "자동 동기화 시 원격 저장소에 없는 스킬을 로컬에서 삭제"
         },
-        "fdcSkills.sync.targets": {
+        "fdcSkills.sync.targets.githubSkills": {
+          "type": "boolean",
+          "default": true,
+          "description": ".github/skills 경로에 동기화"
+        },
+        "fdcSkills.sync.targets.claudeSkills": {
+          "type": "boolean",
+          "default": true,
+          "description": ".claude/skills 경로에 동기화"
+        },
+        "fdcSkills.sync.targets.custom": {
           "type": "array",
           "items": {
-            "type": "object",
-            "title": "Sync Target",
-            "properties": {
-              "path": {
-                "type": "string",
-                "description": "동기화 대상 디렉토리 경로 (예: .github/skills, .claude/skills)"
-              },
-              "enabled": {
-                "type": "boolean",
-                "description": "해당 대상의 동기화 활성화 여부",
-                "default": true
-              }
-            },
-            "required": [
-              "path"
-            ],
-            "additionalProperties": false
+            "type": "string"
           },
-          "default": [
-            {
-              "path": ".github/skills",
-              "enabled": true
-            },
-            {
-              "path": ".claude/skills",
-              "enabled": true
-            }
-          ],
-          "markdownDescription": "스킬 동기화 대상 폴더를 설정합니다.\n\n각 대상은 개별적으로 활성화/비활성화할 수 있습니다:\n- **path**: 스킬이 동기화될 디렉토리 경로\n- **enabled**: 해당 대상의 동기화 활성화/비활성화\n\n예시: `.claude/skills` 또는 `.vs/skills`를 추가 동기화 대상으로 설정"
+          "default": [],
+          "description": "추가 동기화 대상 경로 목록"
         }
       }
     }

@@ -88,7 +88,9 @@ my-skill/
 - `fdcSkills.sync.enabled` — 스킬 자동 동기화 활성화 여부
 - `fdcSkills.sync.intervalSeconds` — 자동 동기화 주기(초), 최소 1
 - `fdcSkills.sync.removeStaleSkills` — 원격에 없는 스킬 로컬 삭제 여부
-- `fdcSkills.sync.targets` — 동기화 대상 경로 배열 (path + enabled)
+- `fdcSkills.sync.targets.githubSkills` — .github/skills 동기화 여부 (boolean)
+- `fdcSkills.sync.targets.claudeSkills` — .claude/skills 동기화 여부 (boolean)
+- `fdcSkills.sync.targets.custom` — 추가 동기화 경로 (string[])
 
 ### Context Keys (VS Code)
 
