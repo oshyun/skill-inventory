@@ -21,6 +21,8 @@ export interface FileNode {
     type: 'file';
     name: string;
     path: vscode.Uri;
+    /** In-memory content for fallback when local file doesn't exist */
+    content?: string;
 }
 
 /**

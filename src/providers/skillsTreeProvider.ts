@@ -142,6 +142,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
             type: 'file',
             name: 'SKILL.md',
             path: this.resolveSkillFileUri(skill, 'SKILL.md'),
+            content: skill.rawContent || skill.content,
         });
 
         const files = skill.files || [];
@@ -159,6 +160,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
                     type: 'file',
                     name: file.relativePath,
                     path: this.resolveSkillFileUri(skill, file.relativePath),
+                    content: file.content,
                 });
             } else {
                 // Walk through path segments, creating intermediate folders
@@ -182,6 +184,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
                     type: 'file',
                     name: parts[parts.length - 1],
                     path: this.resolveSkillFileUri(skill, file.relativePath),
+                    content: file.content,
                 });
             }
         }

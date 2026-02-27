@@ -41,10 +41,18 @@ export function registerSkillCommands(
             }
 
             try {
+                // Try local file first
                 const document = await vscode.workspace.openTextDocument(file.path);
                 await vscode.window.showTextDocument(document, { preview: true });
-            } catch (error) {
-                vscode.window.showErrorMessage(`Failed to open file: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            } catch {
+                // Local file not found — show in-memory content
+                if (file.content) {
+                    const lang = file.name?.endsWith('.md') ? 'markdown' : undefined;
+                    const document = await vscode.workspace.openTextDocument({ content: file.content, language: lang });
+                    await vscode.window.showTextDocument(document, { preview: true });
+                } else {
+                    vscode.window.showErrorMessage('파일을 열 수 없습니다. 동기화가 완료된 후 다시 시도해주세요.');
+                }
             }
         })
     );
