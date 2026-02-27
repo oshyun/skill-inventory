@@ -129,7 +129,7 @@
         },
         "skillShelf.github.branch": {
           "type": "string",
-          "default": "main",
+          "default": "master",
           "description": "GitHub 브랜치 이름"
         },
         "skillShelf.github.skillsPath": {
