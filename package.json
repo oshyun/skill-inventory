@@ -129,7 +129,7 @@
         },
         "fdcSkills.github.skillsPath": {
           "type": "string",
-          "default": "/",
+          "default": "/skills",
           "description": "저장소 내 스킬 디렉토리 경로 (루트는 /)"
         },
         "fdcSkills.sync.enabled": {
