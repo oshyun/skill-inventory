@@ -36,7 +36,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
         const interval = syncConfig.get<number>('intervalSeconds', 30);
         const syncNote = syncEnabled
             ? `\n이 버튼을 누르지 않아도 ${interval}초마다 자동 동기화됩니다.`
-            : '';
+            : '\n자동 동기화가 꺼져 있습니다. 설정에서 켤 수 있습니다.';
         if (this.treeView) {
             this.treeView.message = `${sourceLabel} 에서 스킬을 불러오는 중...${syncNote}`;
         }

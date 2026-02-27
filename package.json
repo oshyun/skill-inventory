@@ -118,7 +118,7 @@
         "skillShelf.sync.enabled": {
           "type": "boolean",
           "default": true,
-          "markdownDescription": "스킬 자동 동기화 활성화 여부. `false` → `true`로 변경 시 즉시 동기화 실행. 비활성화하면 모든 동기화 대상의 스킬 파일이 삭제됩니다."
+          "markdownDescription": "스킬 자동 동기화 활성화 여부"
         },
         "skillShelf.sync.intervalSeconds": {
           "type": "number",
