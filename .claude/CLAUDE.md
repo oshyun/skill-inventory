@@ -86,7 +86,7 @@ my-skill/
 
 - `fdcSkills.github.*` — GitHub 연결 정보 (repoUrl, pat, branch, skillsPath). 없으면 extensionPath/.env 또는 워크스페이스/.env로 폴백
 - `fdcSkills.sync.enabled` — 스킬 자동 동기화 활성화 여부
-- `fdcSkills.sync.intervalSeconds` — 자동 동기화 주기(초), 0이면 비활성화
+- `fdcSkills.sync.intervalSeconds` — 자동 동기화 주기(초), 최소 1
 - `fdcSkills.sync.removeStaleSkills` — 원격에 없는 스킬 로컬 삭제 여부
 - `fdcSkills.sync.targets` — 동기화 대상 경로 배열 (path + enabled)
 

@@ -116,20 +116,21 @@ export function activate(context: vscode.ExtensionContext) {
 
 			if (e.affectsConfiguration('fdcSkills.sync.enabled')) {
 				updateSyncContext();
+				startPolling(githubService, skillsTreeProvider);
 				if (CopilotService.isAutoSyncEnabled()) {
 					const skills = skillsTreeProvider.getSkills();
 					if (skills.length > 0) {
 						try {
 							await CopilotService.syncSkills(skills);
 						} catch (error) {
-							console.error('Copilot re-sync failed:', error);
+							console.error('Sync re-sync failed:', error);
 						}
 					}
 				} else {
 					try {
 						await CopilotService.cleanAll();
 					} catch (error) {
-						console.error('Copilot cleanAll failed:', error);
+						console.error('Sync cleanAll failed:', error);
 					}
 				}
 			}
@@ -175,10 +176,11 @@ function getPollingInterval(): number {
 function startPolling(githubService: GitHubService, provider: SkillsTreeProvider): void {
 	stopPolling();
 
-	const seconds = getPollingInterval();
-	if (seconds <= 0) {
+	if (!CopilotService.isAutoSyncEnabled()) {
 		return;
 	}
+
+	const seconds = getPollingInterval();
 
 	pollingTimer = setInterval(async () => {
 		try {

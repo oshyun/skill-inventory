@@ -140,8 +140,8 @@
         "fdcSkills.sync.intervalSeconds": {
           "type": "number",
           "default": 30,
-          "minimum": 0,
-          "description": "자동 동기화 주기(초). 0이면 비활성화"
+          "minimum": 1,
+          "description": "자동 동기화 주기(초). 활성화 여부는 sync.enabled로 제어"
         },
         "fdcSkills.sync.removeStaleSkills": {
           "type": "boolean",
