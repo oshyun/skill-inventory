@@ -1,4 +1,6 @@
-# FDC Skills VS Code Extension
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## 작업 규칙
 
@@ -6,36 +8,87 @@
 - 커밋 전에 `npx tsc --noEmit`으로 빌드 에러가 없는지 확인한다.
 - 커밋은 `git add -A && git commit -m "메시지"` 형태로 수행한다.
 
-## 빌드 & 설치
-
-### 사전 요구사항
-
-- Node.js 22.x
-- npm
-- `vsce` (npx로 자동 사용됨)
-
-### 빌드 (VSIX 패키징)
+## 주요 명령어
 
 ```bash
+# TypeScript 타입 검사 (빌드 없이)
+npx tsc --noEmit
+
+# TypeScript 컴파일
+npm run compile
+
+# 린트
+npm run lint
+
+# 테스트 실행
+npm test
+
+# VSIX 패키징 (버전 자동 증가 포함)
 npm run package
-```
 
-이 명령은 다음을 순서대로 수행합니다:
-
-1. `npm version patch --no-git-tag-version` — `package.json`의 버전 마지막 자리를 +1 증가 (예: 0.0.6 → 0.0.7), git 태그/커밋 없음
-2. `npx vsce package --allow-missing-repository` — TypeScript 컴파일 후 `.vsix` 파일 생성 (node_modules 의존성 포함)
-
-결과물: 프로젝트 루트에 `fdc-skills-x.x.x.vsix` 파일 생성
-
-### VS Code에 설치
-
-```bash
+# VS Code에 설치
 code --install-extension fdc-skills-x.x.x.vsix --force
 ```
 
-설치 후 `Ctrl+Shift+P` → `Developer: Reload Window`로 리로드 필요.
+## 빌드 & 설치
+
+`npm run package`는 다음을 순서대로 수행:
+1. `npm version patch --no-git-tag-version` — `package.json` 버전 마지막 자리 +1
+2. `npx vsce package --allow-missing-repository` — TypeScript 컴파일 후 `.vsix` 생성
+
+결과물: 프로젝트 루트에 `fdc-skills-x.x.x.vsix` 파일 생성
 
 ### 주의사항
 
-- VSIX 패키징 시 `--no-dependencies` 옵션을 사용하면 안 됨. `@octokit/rest` 등 런타임 의존성이 누락되어 익스텐션 활성화가 실패함.
-- `npm run compile` 만으로는 `.vsix` 파일이 생성되지 않음. 반드시 `npm run package` 사용.
+- VSIX 패키징 시 `--no-dependencies` 옵션 금지 — `@octokit/rest` 런타임 의존성 누락으로 활성화 실패
+- `npm run compile` 만으로는 `.vsix` 미생성, 반드시 `npm run package` 사용
+- 설치 후 `Ctrl+Shift+P` → `Developer: Reload Window` 리로드 필요
+
+## 아키텍처
+
+FDC Skills는 GitHub Enterprise 저장소에서 스킬을 불러와 VS Code의 Activity Bar에 트리 뷰로 표시하고, 로컬 워크스페이스의 `syncTargets` 경로들(기본값: `.github/skills`, `.claude/skills`)에 동기화하는 VS Code 익스텐션이다.
+
+### 소스 구조
+
+```
+src/
+├── extension.ts              # 익스텐션 진입점 — activate/deactivate, 폴링 루프
+├── models/skill.ts           # 데이터 모델 (Skill, TreeNode 타입) 및 markdown 파싱/직렬화 유틸
+├── services/
+│   ├── githubService.ts      # Octokit 기반 GitHub API 클라이언트 (트리 탐색, 파일 다운로드)
+│   └── copilotService.ts     # 로컬 파일 시스템 동기화 (syncTargets → 스킬 폴더 쓰기/삭제)
+├── providers/
+│   └── skillsTreeProvider.ts # VS Code TreeDataProvider 구현 (트리 뷰 렌더링)
+└── commands/
+    └── skillCommands.ts      # 커맨드 핸들러 등록 (refresh, viewSkill, configure 등)
+```
+
+### 핵심 데이터 흐름
+
+1. **스킬 로딩**: `GitHubService.fetchTree()` → GitHub API로 디렉토리 트리 탐색 → `SKILL.md`가 있는 폴더는 `SkillNode`, 없는 폴더는 `FolderNode`로 분류
+2. **트리 뷰**: `SkillsTreeProvider`가 트리 구조를 VS Code UI에 렌더링. 스킬 노드 하위 파일은 로컬 `syncTarget` 폴더에서 읽음
+3. **동기화**: 스킬 로드 완료 후 `CopilotService.syncSkills()` 호출 → `fdcSkills.copilot.syncTargets` 설정의 각 경로로 스킬 파일 기록
+4. **폴링**: `extension.ts`의 `startPolling()` → `fdcSkills.autoRefreshInterval`(초) 마다 최신 커밋 SHA 비교 → 변경 시 refresh 트리거
+
+### 스킬 포맷
+
+스킬은 GitHub 저장소의 폴더 단위로 관리. 각 폴더는 반드시 `SKILL.md`를 포함:
+```
+my-skill/
+├── SKILL.md          # YAML frontmatter + 마크다운 본문 (name, description, tags 등)
+└── references/       # 추가 참조 파일 (선택)
+    └── *.md
+```
+
+`Skill.localPath` — 로컬 syncTarget 내 상대 경로 (skillsPath 루트 기준). 이 값으로 로컬 파일 경로 및 트리 뷰 하위 파일 읽기에 사용.
+
+### 설정 구조
+
+- `fdcSkills.github.*` — GitHub 연결 정보 (repoUrl, pat, branch, skillsPath). 없으면 extensionPath/.env 또는 워크스페이스/.env로 폴백
+- `fdcSkills.copilot.syncTargets` — 동기화 대상 경로 배열 (path + enabled)
+- `fdcSkills.autoRefreshInterval` — 폴링 주기(초), 0이면 비활성화
+
+### Context Keys (VS Code)
+
+- `fdcSkills.isLoading` — 스킬 로딩 중 여부 (Welcome 뷰 표시 제어)
+- `fdcSkills.syncEnabled` — autoSync 활성화 여부 (enable/disable 버튼 토글 제어)

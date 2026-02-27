@@ -1,9 +1,6 @@
 import * as vscode from 'vscode';
 import { Skill, SkillFile } from '../models/skill';
 
-const SKILLS_DIR = '.github/skills';
-const CLAUDE_SKILLS_DIR = '.claude/skills';
-const ALL_SKILLS_DIRS = [SKILLS_DIR, CLAUDE_SKILLS_DIR];
 const SKILL_FILE = 'SKILL.md';
 
 export interface FileChange {
@@ -179,7 +176,7 @@ export class CopilotService {
 			return;
 		}
 
-		for (const skillsDir of ALL_SKILLS_DIRS) {
+		for (const skillsDir of this.getSyncTargets()) {
 			const skillsUri = vscode.Uri.joinPath(wsFolder.uri, skillsDir);
 
 			let entries: [string, vscode.FileType][];
