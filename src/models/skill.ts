@@ -93,24 +93,6 @@ function generateId(): string {
 }
 
 /**
- * Convert skill to markdown file content for GitHub storage
- */
-export function skillToMarkdown(skill: Skill): string {
-    const frontmatter = [
-        '---',
-        `id: ${skill.id}`,
-        `name: ${skill.name}`,
-        `description: ${skill.description}`,
-        skill.tags && skill.tags.length > 0 ? `tags: [${skill.tags.join(', ')}]` : null,
-        `createdAt: ${skill.createdAt}`,
-        `updatedAt: ${skill.updatedAt}`,
-        '---',
-    ].filter(Boolean).join('\n');
-
-    return `${frontmatter}\n\n${skill.content}`;
-}
-
-/**
  * Parse markdown file content to Skill object
  */
 export function markdownToSkill(content: string, filePath: string, sha?: string): Skill {

@@ -334,27 +334,6 @@ export class GitHubService {
     }
 
     /**
-     * Check repository connection
-     */
-    public async testConnection(): Promise<boolean> {
-        if (!this.isConfigured()) {
-            return false;
-        }
-
-        try {
-            const octokit = this.ensureAuthenticated();
-            await octokit.repos.get({
-                owner: this.config!.owner,
-                repo: this.config!.repo,
-            });
-            return true;
-        } catch (error) {
-            console.error('Connection test failed:', error);
-            return false;
-        }
-    }
-
-    /**
      * Get the SHA of the latest commit that touched the skills path.
      * Returns undefined if not configured or on error.
      */

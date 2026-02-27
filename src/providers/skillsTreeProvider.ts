@@ -202,10 +202,6 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
         return this.skills;
     }
 
-    public findSkillById(id: string): Skill | undefined {
-        return this.skills.find(s => s.id === id);
-    }
-
     private getSourceLabel(): string {
         const config = vscode.workspace.getConfiguration('fdcSkills.github');
         const repoUrl = config.get<string>('repoUrl', '');

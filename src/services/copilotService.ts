@@ -1,17 +1,7 @@
 import * as vscode from 'vscode';
-import { Skill, SkillFile } from '../models/skill';
+import { Skill } from '../models/skill';
 
 const SKILL_FILE = 'SKILL.md';
-
-export interface FileChange {
-	relativePath: string;
-	newContent: string;
-}
-
-export interface SkillChange {
-	skill: Skill;
-	changedFiles: FileChange[];
-}
 
 export interface SyncTarget {
 	path: string;
@@ -110,61 +100,6 @@ export class CopilotService {
 
 		// Remove stale directories (but don't recurse into skill roots)
 		await cleanStale(skillsUri, '', desiredPaths, skillRoots);
-	}
-
-	/**
-	 * Detect locally modified skills by comparing local files with original content.
-	 */
-	static async getModifiedSkills(skills: Skill[]): Promise<SkillChange[]> {
-		const wsFolder = vscode.workspace.workspaceFolders?.[0];
-		if (!wsFolder) {
-			return [];
-		}
-
-		const changes: SkillChange[] = [];
-		const seen = new Set<string>();
-
-		// Check all configured sync targets for modifications (first match wins per skill)
-		const syncTargets = this.getSyncTargets();
-		for (const skillsDir of syncTargets) {
-			for (const skill of skills) {
-				if (seen.has(skill.id)) {
-					continue;
-				}
-				const localPath = skill.localPath || skill.id;
-				const dirUri = vscode.Uri.joinPath(wsFolder.uri, skillsDir, localPath);
-
-			const allFiles: Array<{ relativePath: string; content: string }> = [
-				{ relativePath: SKILL_FILE, content: skill.rawContent || skill.content },
-				...(skill.files || []),
-			];
-
-			const changedFiles: FileChange[] = [];
-
-			for (const file of allFiles) {
-				const fileUri = vscode.Uri.joinPath(dirUri, ...file.relativePath.split('/'));
-
-				let currentContent: string;
-				try {
-					const raw = await vscode.workspace.fs.readFile(fileUri);
-					currentContent = Buffer.from(raw).toString('utf-8');
-				} catch {
-					continue;
-				}
-
-				if (currentContent !== file.content) {
-					changedFiles.push({ relativePath: file.relativePath, newContent: currentContent });
-				}
-			}
-
-				if (changedFiles.length > 0) {
-					changes.push({ skill, changedFiles });
-					seen.add(skill.id);
-				}
-			}
-		}
-
-		return changes;
 	}
 
 	/**
