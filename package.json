@@ -3,7 +3,7 @@
   "displayName": "Skill Shelf",
   "description": "Manage and sync skills from a GitHub repository",
   "version": "0.0.1",
-  "publisher": "fintelligence",
+  "publisher": "oshyun",
   "engines": {
     "vscode": "^1.85.0"
   },
