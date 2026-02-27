@@ -2,7 +2,7 @@
   "name": "skill-shelf",
   "displayName": "Skill Shelf",
   "description": "Manage and sync skills from a GitHub repository",
-  "version": "0.0.12",
+  "version": "0.0.1",
   "publisher": "fintelligence",
   "engines": {
     "vscode": "^1.85.0"
