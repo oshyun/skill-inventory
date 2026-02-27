@@ -2,7 +2,7 @@
   "name": "fdc-skills",
   "displayName": "FDC Skills",
   "description": "Manage FDC skills from a GitHub repository",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "publisher": "fintelligence",
   "engines": {
     "vscode": "^1.85.0"
