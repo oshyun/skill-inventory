@@ -31,8 +31,14 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
         vscode.commands.executeCommand('setContext', 'skillShelf.isLoading', true);
 
         const sourceLabel = this.getSourceLabel();
+        const syncConfig = vscode.workspace.getConfiguration('skillShelf.sync');
+        const syncEnabled = syncConfig.get<boolean>('enabled', true);
+        const interval = syncConfig.get<number>('intervalSeconds', 30);
+        const syncNote = syncEnabled
+            ? `\n이 버튼을 누르지 않아도 ${interval}초마다 자동 동기화됩니다.`
+            : '';
         if (this.treeView) {
-            this.treeView.message = `${sourceLabel} 에서 스킬을 불러오는 중...`;
+            this.treeView.message = `${sourceLabel} 에서 스킬을 불러오는 중...${syncNote}`;
         }
         this._onDidChangeTreeData.fire();
 
