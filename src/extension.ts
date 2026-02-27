@@ -42,38 +42,6 @@ export function activate(context: vscode.ExtensionContext) {
 	// Register all commands
 	registerSkillCommands(context, githubService, skillsTreeProvider);
 
-	// Register enable/disable sync commands
-	context.subscriptions.push(
-		vscode.commands.registerCommand('skillShelf.enableSync', async () => {
-			const config = vscode.workspace.getConfiguration('skillShelf.sync');
-			await config.update('enabled', true, vscode.ConfigurationTarget.Global);
-			updateSyncContext();
-			vscode.window.showInformationMessage('Skills auto-sync: ON');
-			const skills = skillsTreeProvider.getSkills();
-			if (skills.length > 0) {
-				try {
-					await CopilotService.syncSkills(skills);
-				} catch (error) {
-					console.error('Sync after enable failed:', error);
-				}
-			}
-		})
-	);
-
-	context.subscriptions.push(
-		vscode.commands.registerCommand('skillShelf.disableSync', async () => {
-			const config = vscode.workspace.getConfiguration('skillShelf.sync');
-			await config.update('enabled', false, vscode.ConfigurationTarget.Global);
-			updateSyncContext();
-			vscode.window.showInformationMessage('Skills auto-sync: OFF');
-			try {
-				await CopilotService.cleanAll();
-			} catch (error) {
-				console.error('CleanAll after disable failed:', error);
-			}
-		})
-	);
-
 	// Register Copilot sync command
 	context.subscriptions.push(
 		vscode.commands.registerCommand('skillShelf.syncCopilotPrompts', async () => {

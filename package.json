@@ -66,18 +66,6 @@
         "category": "Skill Shelf"
       },
       {
-        "command": "skillShelf.enableSync",
-        "title": "자동 동기화 켜기 (현재: 꺼짐)",
-        "icon": "$(sync-ignored)",
-        "category": "Skill Shelf"
-      },
-      {
-        "command": "skillShelf.disableSync",
-        "title": "자동 동기화 끄기 (현재: 켜짐)",
-        "icon": "$(cloud-download)",
-        "category": "Skill Shelf"
-      },
-      {
         "command": "skillShelf.setupRepository",
         "title": "저장소 설정",
         "category": "Skill Shelf"
@@ -93,16 +81,6 @@
         {
           "command": "skillShelf.configure",
           "when": "view == skillShelfView",
-          "group": "navigation"
-        },
-        {
-          "command": "skillShelf.enableSync",
-          "when": "view == skillShelfView && !skillShelf.syncEnabled",
-          "group": "navigation"
-        },
-        {
-          "command": "skillShelf.disableSync",
-          "when": "view == skillShelfView && skillShelf.syncEnabled",
           "group": "navigation"
         }
       ],
