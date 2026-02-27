@@ -67,8 +67,8 @@ src/
 
 1. **스킬 로딩**: `GitHubService.fetchTree()` → GitHub API로 디렉토리 트리 탐색 → `SKILL.md`가 있는 폴더는 `SkillNode`, 없는 폴더는 `FolderNode`로 분류
 2. **트리 뷰**: `SkillsTreeProvider`가 트리 구조를 VS Code UI에 렌더링. 스킬 노드 하위 파일은 로컬 `syncTarget` 폴더에서 읽음
-3. **동기화**: 스킬 로드 완료 후 `CopilotService.syncSkills()` 호출 → `fdcSkills.copilot.syncTargets` 설정의 각 경로로 스킬 파일 기록
-4. **폴링**: `extension.ts`의 `startPolling()` → `fdcSkills.autoRefreshInterval`(초) 마다 최신 커밋 SHA 비교 → 변경 시 refresh 트리거
+3. **동기화**: 스킬 로드 완료 후 `CopilotService.syncSkills()` 호출 → `fdcSkills.sync.targets` 설정의 각 경로로 스킬 파일 기록
+4. **폴링**: `extension.ts`의 `startPolling()` → `fdcSkills.sync.intervalSeconds`(초) 마다 최신 커밋 SHA 비교 → 변경 시 refresh 트리거
 
 ### 스킬 포맷
 
@@ -85,8 +85,10 @@ my-skill/
 ### 설정 구조
 
 - `fdcSkills.github.*` — GitHub 연결 정보 (repoUrl, pat, branch, skillsPath). 없으면 extensionPath/.env 또는 워크스페이스/.env로 폴백
-- `fdcSkills.copilot.syncTargets` — 동기화 대상 경로 배열 (path + enabled)
-- `fdcSkills.autoRefreshInterval` — 폴링 주기(초), 0이면 비활성화
+- `fdcSkills.sync.enabled` — 스킬 자동 동기화 활성화 여부
+- `fdcSkills.sync.intervalSeconds` — 자동 동기화 주기(초), 0이면 비활성화
+- `fdcSkills.sync.removeStaleSkills` — 원격에 없는 스킬 로컬 삭제 여부
+- `fdcSkills.sync.targets` — 동기화 대상 경로 배열 (path + enabled)
 
 ### Context Keys (VS Code)
 

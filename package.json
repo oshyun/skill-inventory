@@ -115,7 +115,7 @@
         "fdcSkills.github.repoUrl": {
           "type": "string",
           "default": "https://oss.fin.navercorp.com/fintelligence/skills-hub.git",
-          "description": "GitHub Enterprise repository URL (e.g. https://github.example.com/org/repo.git)"
+          "description": "GitHub Enterprise 저장소 URL (예: https://github.example.com/org/repo.git)"
         },
         "fdcSkills.github.pat": {
           "type": "string",
@@ -125,25 +125,30 @@
         "fdcSkills.github.branch": {
           "type": "string",
           "default": "master",
-          "description": "GitHub branch name"
+          "description": "GitHub 브랜치 이름"
         },
         "fdcSkills.github.skillsPath": {
           "type": "string",
           "default": "/",
-          "description": "Path to skills directory in the repository (use / for root)"
+          "description": "저장소 내 스킬 디렉토리 경로 (루트는 /)"
         },
-        "fdcSkills.autoRefreshInterval": {
+        "fdcSkills.sync.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "스킬 자동 동기화 활성화 여부. false → true로 변경 시 즉시 동기화 실행"
+        },
+        "fdcSkills.sync.intervalSeconds": {
           "type": "number",
           "default": 30,
           "minimum": 0,
-          "description": "Auto-refresh interval in seconds (0 to disable). Polls the server for changes and refreshes if skills were modified."
+          "description": "자동 동기화 주기(초). 0이면 비활성화"
         },
-        "fdcSkills.copilot.autoSync": {
+        "fdcSkills.sync.removeStaleSkills": {
           "type": "boolean",
           "default": true,
-          "description": "Automatically sync skills to .github/prompts/ for Copilot Chat integration"
+          "description": "자동 동기화 시 원격 저장소에 없는 스킬을 로컬에서 삭제"
         },
-        "fdcSkills.copilot.syncTargets": {
+        "fdcSkills.sync.targets": {
           "type": "array",
           "items": {
             "type": "object",
@@ -151,11 +156,11 @@
             "properties": {
               "path": {
                 "type": "string",
-                "description": "Target directory path for skill synchronization (e.g., .github/skills, .claude/skills)"
+                "description": "동기화 대상 디렉토리 경로 (예: .github/skills, .claude/skills)"
               },
               "enabled": {
                 "type": "boolean",
-                "description": "Enable or disable synchronization to this target",
+                "description": "해당 대상의 동기화 활성화 여부",
                 "default": true
               }
             },
@@ -174,7 +179,7 @@
               "enabled": true
             }
           ],
-          "markdownDescription": "Configure multiple target directories for skill synchronization.\n\nEach target can be individually enabled or disabled:\n- **path**: Directory path where skills will be synchronized\n- **enabled**: Toggle synchronization on/off for this target\n\nExample: Add `.claude/skills` or `.vs/skills` as additional sync targets"
+          "markdownDescription": "스킬 동기화 대상 폴더를 설정합니다.\n\n각 대상은 개별적으로 활성화/비활성화할 수 있습니다:\n- **path**: 스킬이 동기화될 디렉토리 경로\n- **enabled**: 해당 대상의 동기화 활성화/비활성화\n\n예시: `.claude/skills` 또는 `.vs/skills`를 추가 동기화 대상으로 설정"
         }
       }
     }

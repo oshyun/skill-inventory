@@ -45,8 +45,8 @@ export function activate(context: vscode.ExtensionContext) {
 	// Register enable/disable sync commands
 	context.subscriptions.push(
 		vscode.commands.registerCommand('fdcSkills.enableSync', async () => {
-			const config = vscode.workspace.getConfiguration('fdcSkills.copilot');
-			await config.update('autoSync', true, vscode.ConfigurationTarget.Global);
+			const config = vscode.workspace.getConfiguration('fdcSkills.sync');
+			await config.update('enabled', true, vscode.ConfigurationTarget.Global);
 			updateSyncContext();
 			vscode.window.showInformationMessage('Skills auto-sync: ON');
 			const skills = skillsTreeProvider.getSkills();
@@ -62,8 +62,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand('fdcSkills.disableSync', async () => {
-			const config = vscode.workspace.getConfiguration('fdcSkills.copilot');
-			await config.update('autoSync', false, vscode.ConfigurationTarget.Global);
+			const config = vscode.workspace.getConfiguration('fdcSkills.sync');
+			await config.update('enabled', false, vscode.ConfigurationTarget.Global);
 			updateSyncContext();
 			vscode.window.showInformationMessage('Skills auto-sync: OFF');
 			try {
@@ -114,7 +114,7 @@ export function activate(context: vscode.ExtensionContext) {
 				skillsTreeProvider.refresh();
 			}
 
-			if (e.affectsConfiguration('fdcSkills.copilot.autoSync')) {
+			if (e.affectsConfiguration('fdcSkills.sync.enabled')) {
 				updateSyncContext();
 				if (CopilotService.isAutoSyncEnabled()) {
 					const skills = skillsTreeProvider.getSkills();
@@ -134,7 +134,7 @@ export function activate(context: vscode.ExtensionContext) {
 				}
 			}
 
-			if (e.affectsConfiguration('fdcSkills.autoRefreshInterval')) {
+			if (e.affectsConfiguration('fdcSkills.sync.intervalSeconds')) {
 				startPolling(githubService, skillsTreeProvider);
 			}
 		})
@@ -168,8 +168,8 @@ function updateDescription(changed?: boolean): void {
 
 function getPollingInterval(): number {
 	return vscode.workspace
-		.getConfiguration('fdcSkills')
-		.get<number>('autoRefreshInterval', 30);
+		.getConfiguration('fdcSkills.sync')
+		.get<number>('intervalSeconds', 30);
 }
 
 function startPolling(githubService: GitHubService, provider: SkillsTreeProvider): void {

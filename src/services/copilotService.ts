@@ -14,8 +14,8 @@ export class CopilotService {
 	 * Returns array of enabled sync target paths.
 	 */
 	static getSyncTargets(): string[] {
-		const config = vscode.workspace.getConfiguration('fdcSkills.copilot');
-		const targets = config.get<SyncTarget[]>('syncTargets', [
+		const config = vscode.workspace.getConfiguration('fdcSkills.sync');
+		const targets = config.get<SyncTarget[]>('targets', [
 			{ path: '.github/skills', enabled: true },
 			{ path: '.claude/skills', enabled: true },
 		]);
@@ -99,7 +99,12 @@ export class CopilotService {
 		}
 
 		// Remove stale directories (but don't recurse into skill roots)
-		await cleanStale(skillsUri, '', desiredPaths, skillRoots);
+		const removeStale = vscode.workspace
+			.getConfiguration('fdcSkills.sync')
+			.get<boolean>('removeStaleSkills', true);
+		if (removeStale) {
+			await cleanStale(skillsUri, '', desiredPaths, skillRoots);
+		}
 	}
 
 	/**
@@ -137,8 +142,8 @@ export class CopilotService {
 
 	static isAutoSyncEnabled(): boolean {
 		return vscode.workspace
-			.getConfiguration('fdcSkills.copilot')
-			.get<boolean>('autoSync', true);
+			.getConfiguration('fdcSkills.sync')
+			.get<boolean>('enabled', true);
 	}
 }
 
