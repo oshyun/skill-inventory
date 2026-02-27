@@ -44,7 +44,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
                         this.tree = [];
                         this.skills = [];
                         vscode.window.showErrorMessage(
-                            'GitHub Enterprise not configured. Set repoUrl and pat in Settings (fdcSkills.github) or .env file.'
+                            'GitHub 저장소가 설정되지 않았습니다. 저장소 URL을 설정해주세요.'
                         );
                     } else {
                         const result = await this.githubService.fetchTree();
@@ -222,6 +222,6 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
                 return `${match[1]}/${match[2]} (${branch})`;
             }
         }
-        return 'GitHub Enterprise';
+        return 'GitHub';
     }
 }

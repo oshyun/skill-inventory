@@ -36,7 +36,7 @@
     "viewsWelcome": [
       {
         "view": "fdcSkillsView",
-        "contents": "No skills found.\n\nConfigure repository in [Settings](command:workbench.action.openSettings?%22fdcSkills.github%22).",
+        "contents": "스킬 저장소가 설정되지 않았습니다.\n\n[저장소 설정](command:fdcSkills.setupRepository)",
         "when": "!fdcSkills.isLoading"
       }
     ],
@@ -76,6 +76,11 @@
         "title": "Disable Auto Sync",
         "icon": "$(sync)",
         "category": "FDC Skills"
+      },
+      {
+        "command": "fdcSkills.setupRepository",
+        "title": "저장소 설정",
+        "category": "FDC Skills"
       }
     ],
     "menus": {
@@ -114,17 +119,17 @@
       "properties": {
         "fdcSkills.github.repoUrl": {
           "type": "string",
-          "default": "https://oss.fin.navercorp.com/fintelligence/skills-hub.git",
-          "description": "GitHub Enterprise 저장소 URL (예: https://github.example.com/org/repo.git)"
+          "default": "",
+          "description": "GitHub 저장소 URL (예: https://github.com/org/repo.git 또는 https://github.example.com/org/repo.git)"
         },
         "fdcSkills.github.pat": {
           "type": "string",
           "default": "",
-          "description": "GitHub Personal Access Token (PAT)"
+          "description": "GitHub Personal Access Token (PAT). 선택사항. 비공개 저장소 접속 시 필요합니다."
         },
         "fdcSkills.github.branch": {
           "type": "string",
-          "default": "master",
+          "default": "main",
           "description": "GitHub 브랜치 이름"
         },
         "fdcSkills.github.skillsPath": {

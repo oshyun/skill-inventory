@@ -13,8 +13,6 @@ export interface GitHubConfig {
     pat: string;
 }
 
-const BUILTIN_PAT = 'REDACTED';
-
 export class GitHubService {
     private octokit: Octokit | null = null;
     private config: GitHubConfig | null = null;
@@ -48,20 +46,22 @@ export class GitHubService {
     }
 
     /**
-     * Parse GitHub URL to extract owner and repo
+     * Parse GitHub URL to extract owner and repo.
+     * Supports both GitHub.com and GitHub Enterprise URLs.
      */
     private parseRepoUrl(url: string): { baseUrl: string; owner: string; repo: string } {
-        // Handle URLs like: https://oss.fin.navercorp.com/fintelligence/skill-hub.git
         const match = url.match(/^(https?:\/\/[^\/]+)\/([^\/]+)\/([^\/]+?)(\.git)?$/);
-        
+
         if (match) {
+            const host = match[1];
+            const isGitHubCom = /^https?:\/\/(www\.)?github\.com$/i.test(host);
             return {
-                baseUrl: `${match[1]}/api/v3`,
+                baseUrl: isGitHubCom ? 'https://api.github.com' : `${host}/api/v3`,
                 owner: match[2],
                 repo: match[3],
             };
         }
-        
+
         throw new Error(`Invalid repository URL: ${url}`);
     }
 
@@ -83,11 +83,11 @@ export class GitHubService {
             // 1) Try VS Code settings first
             const vsConfig = vscode.workspace.getConfiguration('fdcSkills.github');
             const settingsRepoUrl = vsConfig.get<string>('repoUrl', '');
-            const settingsPat = vsConfig.get<string>('pat', '') || BUILTIN_PAT;
+            const settingsPat = vsConfig.get<string>('pat', '');
 
             if (settingsRepoUrl) {
                 const { baseUrl, owner, repo } = this.parseRepoUrl(settingsRepoUrl);
-                const token = this.parsePat(settingsPat);
+                const token = settingsPat ? this.parsePat(settingsPat) : '';
                 const branch = vsConfig.get<string>('branch', 'main');
                 const skillsPathRaw = vsConfig.get<string>('skillsPath', 'skills');
 
@@ -101,11 +101,11 @@ export class GitHubService {
                 };
 
                 this.octokit = new Octokit({
-                    auth: this.config.pat,
+                    auth: this.config.pat || undefined,
                     baseUrl: this.config.baseUrl,
                 });
 
-                console.log(`GitHub Enterprise configured (settings): ${this.config.baseUrl}, ${this.config.owner}/${this.config.repo}`);
+                console.log(`GitHub configured (settings): ${this.config.baseUrl}, ${this.config.owner}/${this.config.repo}`);
                 return;
             }
 
@@ -161,7 +161,7 @@ export class GitHubService {
                 baseUrl: this.config.baseUrl,
             });
 
-            console.log(`GitHub Enterprise configured (.env): ${this.config.baseUrl}, ${this.config.owner}/${this.config.repo}`);
+            console.log(`GitHub configured (.env): ${this.config.baseUrl}, ${this.config.owner}/${this.config.repo}`);
         } catch (error) {
             console.error('Failed to load config:', error);
             this.config = null;
@@ -172,7 +172,7 @@ export class GitHubService {
      * Check if the service is properly configured
      */
     public isConfigured(): boolean {
-        return !!(this.config?.owner && this.config?.repo && this.config?.pat);
+        return !!(this.config?.owner && this.config?.repo);
     }
 
     /**
@@ -194,7 +194,7 @@ export class GitHubService {
      */
     private ensureAuthenticated(): Octokit {
         if (!this.octokit || !this.config) {
-            throw new Error('GitHub Enterprise not configured. Set repoUrl and pat in Settings or .env file.');
+            throw new Error('GitHub 저장소가 설정되지 않았습니다. 저장소 URL을 설정해주세요.');
         }
         return this.octokit;
     }
@@ -205,7 +205,7 @@ export class GitHubService {
      */
     public async fetchTree(): Promise<{ tree: TreeNode[]; skills: Skill[] }> {
         if (!this.isConfigured()) {
-            throw new Error('GitHub Enterprise not configured. Set repoUrl and pat in Settings or .env file.');
+            throw new Error('GitHub 저장소가 설정되지 않았습니다. 저장소 URL을 설정해주세요.');
         }
 
         const octokit = this.ensureAuthenticated();
