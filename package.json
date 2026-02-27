@@ -1,7 +1,7 @@
 {
-  "name": "fdc-skills",
-  "displayName": "FDC Skills",
-  "description": "Manage FDC skills from a GitHub repository",
+  "name": "skill-shelf",
+  "displayName": "Skill Shelf",
+  "description": "Manage and sync skills from a GitHub repository",
   "version": "0.0.12",
   "publisher": "fintelligence",
   "engines": {
@@ -18,162 +18,162 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "fdc-skills-explorer",
-          "title": "FDC Skills",
+          "id": "skill-shelf-explorer",
+          "title": "Skill Shelf",
           "icon": "resources/icon.svg"
         }
       ]
     },
     "views": {
-      "fdc-skills-explorer": [
+      "skill-shelf-explorer": [
         {
-          "id": "fdcSkillsView",
+          "id": "skillShelfView",
           "name": "Skills",
-          "contextualTitle": "FDC Skills"
+          "contextualTitle": "Skill Shelf"
         }
       ]
     },
     "viewsWelcome": [
       {
-        "view": "fdcSkillsView",
-        "contents": "스킬 저장소가 설정되지 않았습니다.\n\n[저장소 설정](command:fdcSkills.setupRepository)",
-        "when": "!fdcSkills.isLoading"
+        "view": "skillShelfView",
+        "contents": "스킬 저장소가 설정되지 않았습니다.\n\n[저장소 설정](command:skillShelf.setupRepository)",
+        "when": "!skillShelf.isLoading"
       }
     ],
     "commands": [
       {
-        "command": "fdcSkills.refresh",
+        "command": "skillShelf.refresh",
         "title": "Refresh Skills",
         "icon": "$(refresh)",
-        "category": "FDC Skills"
+        "category": "Skill Shelf"
       },
       {
-        "command": "fdcSkills.configure",
+        "command": "skillShelf.configure",
         "title": "Configure Repository",
         "icon": "$(gear)",
-        "category": "FDC Skills"
+        "category": "Skill Shelf"
       },
       {
-        "command": "fdcSkills.viewSkill",
+        "command": "skillShelf.viewSkill",
         "title": "View Skill Details",
         "icon": "$(eye)",
-        "category": "FDC Skills"
+        "category": "Skill Shelf"
       },
       {
-        "command": "fdcSkills.syncCopilotPrompts",
+        "command": "skillShelf.syncCopilotPrompts",
         "title": "Sync Skills to Copilot Prompts",
         "icon": "$(copilot)",
-        "category": "FDC Skills"
+        "category": "Skill Shelf"
       },
       {
-        "command": "fdcSkills.enableSync",
+        "command": "skillShelf.enableSync",
         "title": "Enable Auto Sync",
         "icon": "$(sync-ignored)",
-        "category": "FDC Skills"
+        "category": "Skill Shelf"
       },
       {
-        "command": "fdcSkills.disableSync",
+        "command": "skillShelf.disableSync",
         "title": "Disable Auto Sync",
         "icon": "$(sync)",
-        "category": "FDC Skills"
+        "category": "Skill Shelf"
       },
       {
-        "command": "fdcSkills.setupRepository",
+        "command": "skillShelf.setupRepository",
         "title": "저장소 설정",
-        "category": "FDC Skills"
+        "category": "Skill Shelf"
       }
     ],
     "menus": {
       "view/title": [
         {
-          "command": "fdcSkills.refresh",
-          "when": "view == fdcSkillsView",
+          "command": "skillShelf.refresh",
+          "when": "view == skillShelfView",
           "group": "navigation"
         },
         {
-          "command": "fdcSkills.configure",
-          "when": "view == fdcSkillsView",
+          "command": "skillShelf.configure",
+          "when": "view == skillShelfView",
           "group": "navigation"
         },
         {
-          "command": "fdcSkills.enableSync",
-          "when": "view == fdcSkillsView && !fdcSkills.syncEnabled",
+          "command": "skillShelf.enableSync",
+          "when": "view == skillShelfView && !skillShelf.syncEnabled",
           "group": "navigation"
         },
         {
-          "command": "fdcSkills.disableSync",
-          "when": "view == fdcSkillsView && fdcSkills.syncEnabled",
+          "command": "skillShelf.disableSync",
+          "when": "view == skillShelfView && skillShelf.syncEnabled",
           "group": "navigation"
         }
       ],
       "view/item/context": [
         {
-          "command": "fdcSkills.viewSkill",
-          "when": "view == fdcSkillsView && viewItem == skill",
+          "command": "skillShelf.viewSkill",
+          "when": "view == skillShelfView && viewItem == skill",
           "group": "inline"
         }
       ]
     },
     "configuration": {
-      "title": "FDC Skills",
+      "title": "Skill Shelf",
       "properties": {
-        "fdcSkills.github.repoUrl": {
+        "skillShelf.github.repoUrl": {
           "type": "string",
           "default": "",
           "description": "GitHub 저장소 URL (예: https://github.com/org/repo.git 또는 https://github.example.com/org/repo.git)"
         },
-        "fdcSkills.github.pat": {
+        "skillShelf.github.pat": {
           "type": "string",
           "default": "",
           "description": "GitHub Personal Access Token (PAT). 선택사항. 비공개 저장소 접속 시 필요합니다."
         },
-        "fdcSkills.github.branch": {
+        "skillShelf.github.branch": {
           "type": "string",
           "default": "main",
           "description": "GitHub 브랜치 이름"
         },
-        "fdcSkills.github.skillsPath": {
+        "skillShelf.github.skillsPath": {
           "type": "string",
           "default": "/skills",
           "description": "저장소 내 스킬 디렉토리 경로 (루트는 /)"
         },
-        "fdcSkills.sync.enabled": {
+        "skillShelf.sync.enabled": {
           "type": "boolean",
           "default": true,
           "markdownDescription": "스킬 자동 동기화 활성화 여부. `false` → `true`로 변경 시 즉시 동기화 실행. 비활성화하면 모든 동기화 대상의 스킬 파일이 삭제됩니다."
         },
-        "fdcSkills.sync.intervalSeconds": {
+        "skillShelf.sync.intervalSeconds": {
           "type": "number",
           "default": 30,
           "minimum": 30,
           "markdownDescription": "원격 저장소 변경 감지 주기(초). 변경이 감지되면 모든 활성화된 동기화 대상에 반영됩니다. on/off는 `sync.enabled`로 제어합니다."
         },
-        "fdcSkills.sync.removeStaleSkills": {
+        "skillShelf.sync.removeStaleSkills": {
           "type": "boolean",
           "default": true,
           "markdownDescription": "동기화 시 원격 저장소에 없는 스킬을 로컬에서 삭제. 비활성화하면 원격에서 삭제된 스킬이 로컬 동기화 대상 폴더에 계속 남아있습니다."
         },
-        "fdcSkills.sync.targets.githubSkills": {
+        "skillShelf.sync.targets.githubSkills": {
           "type": "boolean",
           "default": true,
           "markdownDescription": "워크스페이스 `.github/skills/`에 동기화. **GitHub Copilot**이 이 경로의 스킬을 자동 인식합니다. 현재 프로젝트에만 적용됩니다."
         },
-        "fdcSkills.sync.targets.claudeSkills": {
+        "skillShelf.sync.targets.claudeSkills": {
           "type": "boolean",
           "default": true,
           "markdownDescription": "워크스페이스 `.claude/skills/`에 동기화. **Claude Code**가 프로젝트 컨텍스트에서 이 경로의 스킬을 참조합니다. 현재 프로젝트에만 적용됩니다."
         },
-        "fdcSkills.sync.targets.githubSkillsGlobal": {
+        "skillShelf.sync.targets.githubSkillsGlobal": {
           "type": "boolean",
           "default": false,
           "markdownDescription": "홈 디렉토리 `~/.github/skills/`에 동기화. **GitHub Copilot**이 모든 프로젝트에서 전역으로 이 스킬을 참조합니다. 모든 워크스페이스에 영향을 줍니다."
         },
-        "fdcSkills.sync.targets.claudeSkillsGlobal": {
+        "skillShelf.sync.targets.claudeSkillsGlobal": {
           "type": "boolean",
           "default": false,
           "markdownDescription": "홈 디렉토리 `~/.claude/skills/`에 동기화. **Claude Code**가 모든 프로젝트에서 전역으로 이 스킬을 참조합니다. 모든 워크스페이스에 영향을 줍니다."
         },
-        "fdcSkills.sync.targets.custom": {
+        "skillShelf.sync.targets.custom": {
           "type": "array",
           "items": {
             "type": "string"

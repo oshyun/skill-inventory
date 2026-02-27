@@ -13,14 +13,14 @@ export function registerSkillCommands(
 ): void {
     // Refresh skills command
     context.subscriptions.push(
-        vscode.commands.registerCommand('fdcSkills.refresh', async () => {
+        vscode.commands.registerCommand('skillShelf.refresh', async () => {
             await skillsTreeProvider.refresh();
         })
     );
 
     // View skill command — expand skill folder to show contents
     context.subscriptions.push(
-        vscode.commands.registerCommand('fdcSkills.viewSkill', async (node: TreeNode) => {
+        vscode.commands.registerCommand('skillShelf.viewSkill', async (node: TreeNode) => {
             if (!node || node.type !== 'skill') {
                 vscode.window.showErrorMessage('No skill selected');
                 return;
@@ -34,7 +34,7 @@ export function registerSkillCommands(
 
     // Open file command — open a file in the skill folder
     context.subscriptions.push(
-        vscode.commands.registerCommand('fdcSkills.openFile', async (file: any) => {
+        vscode.commands.registerCommand('skillShelf.openFile', async (file: any) => {
             if (!file || !file.path) {
                 vscode.window.showErrorMessage('No file selected');
                 return;
@@ -49,16 +49,16 @@ export function registerSkillCommands(
         })
     );
 
-    // Configure repository command — open VS Code settings filtered to fdcSkills
+    // Configure repository command — open VS Code settings filtered to skillShelf
     context.subscriptions.push(
-        vscode.commands.registerCommand('fdcSkills.configure', () => {
-            vscode.commands.executeCommand('workbench.action.openSettings', 'fdcSkills');
+        vscode.commands.registerCommand('skillShelf.configure', () => {
+            vscode.commands.executeCommand('workbench.action.openSettings', 'skillShelf');
         })
     );
 
     // Setup repository command — guided InputBox workflow
     context.subscriptions.push(
-        vscode.commands.registerCommand('fdcSkills.setupRepository', async () => {
+        vscode.commands.registerCommand('skillShelf.setupRepository', async () => {
             // Step 1: Repository URL (required)
             const repoUrl = await vscode.window.showInputBox({
                 title: '저장소 설정 (1/2)',
@@ -94,14 +94,14 @@ export function registerSkillCommands(
             }
 
             // Save to global settings
-            const config = vscode.workspace.getConfiguration('fdcSkills.github');
+            const config = vscode.workspace.getConfiguration('skillShelf.github');
             await config.update('repoUrl', repoUrl.trim(), vscode.ConfigurationTarget.Global);
             if (pat) {
                 await config.update('pat', pat.trim(), vscode.ConfigurationTarget.Global);
             }
 
             vscode.window.showInformationMessage('저장소 설정이 완료되었습니다.');
-            await vscode.commands.executeCommand('fdcSkills.refresh');
+            await vscode.commands.executeCommand('skillShelf.refresh');
         })
     );
 

@@ -11,14 +11,14 @@ let treeViewRef: vscode.TreeView<any> | undefined;
 /** Update the context key and tree-view description badge for sync state */
 function updateSyncContext(): void {
 	const enabled = CopilotService.isAutoSyncEnabled();
-	vscode.commands.executeCommand('setContext', 'fdcSkills.syncEnabled', enabled);
+	vscode.commands.executeCommand('setContext', 'skillShelf.syncEnabled', enabled);
 }
 
 /**
  * This method is called when your extension is activated
  */
 export function activate(context: vscode.ExtensionContext) {
-	console.log('FDC Skills Manager is now active!');
+	console.log('Skill Shelf Manager is now active!');
 
 	// Initialize services with extension path for .env file
 	const githubService = new GitHubService(context.extensionPath);
@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const skillsTreeProvider = new SkillsTreeProvider(githubService);
 
 	// Register tree view
-	const treeView = vscode.window.createTreeView('fdcSkillsView', {
+	const treeView = vscode.window.createTreeView('skillShelfView', {
 		treeDataProvider: skillsTreeProvider,
 		showCollapseAll: true,
 	});
@@ -44,8 +44,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Register enable/disable sync commands
 	context.subscriptions.push(
-		vscode.commands.registerCommand('fdcSkills.enableSync', async () => {
-			const config = vscode.workspace.getConfiguration('fdcSkills.sync');
+		vscode.commands.registerCommand('skillShelf.enableSync', async () => {
+			const config = vscode.workspace.getConfiguration('skillShelf.sync');
 			await config.update('enabled', true, vscode.ConfigurationTarget.Global);
 			updateSyncContext();
 			vscode.window.showInformationMessage('Skills auto-sync: ON');
@@ -61,8 +61,8 @@ export function activate(context: vscode.ExtensionContext) {
 	);
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand('fdcSkills.disableSync', async () => {
-			const config = vscode.workspace.getConfiguration('fdcSkills.sync');
+		vscode.commands.registerCommand('skillShelf.disableSync', async () => {
+			const config = vscode.workspace.getConfiguration('skillShelf.sync');
 			await config.update('enabled', false, vscode.ConfigurationTarget.Global);
 			updateSyncContext();
 			vscode.window.showInformationMessage('Skills auto-sync: OFF');
@@ -76,7 +76,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Register Copilot sync command
 	context.subscriptions.push(
-		vscode.commands.registerCommand('fdcSkills.syncCopilotPrompts', async () => {
+		vscode.commands.registerCommand('skillShelf.syncCopilotPrompts', async () => {
 			const skills = skillsTreeProvider.getSkills();
 			if (skills.length === 0) {
 				vscode.window.showWarningMessage('No skills loaded. Refresh skills first.');
@@ -108,13 +108,13 @@ export function activate(context: vscode.ExtensionContext) {
 	// Listen for configuration changes
 	context.subscriptions.push(
 		vscode.workspace.onDidChangeConfiguration(async (e) => {
-			if (e.affectsConfiguration('fdcSkills.github')) {
+			if (e.affectsConfiguration('skillShelf.github')) {
 				githubService.refreshConfig();
 				lastKnownSha = undefined;
 				skillsTreeProvider.refresh();
 			}
 
-			if (e.affectsConfiguration('fdcSkills.sync.enabled')) {
+			if (e.affectsConfiguration('skillShelf.sync.enabled')) {
 				updateSyncContext();
 				startPolling(githubService, skillsTreeProvider);
 				if (CopilotService.isAutoSyncEnabled()) {
@@ -135,7 +135,7 @@ export function activate(context: vscode.ExtensionContext) {
 				}
 			}
 
-			if (e.affectsConfiguration('fdcSkills.sync.intervalSeconds')) {
+			if (e.affectsConfiguration('skillShelf.sync.intervalSeconds')) {
 				startPolling(githubService, skillsTreeProvider);
 			}
 		})
@@ -169,7 +169,7 @@ function updateDescription(changed?: boolean): void {
 
 function getPollingInterval(): number {
 	return vscode.workspace
-		.getConfiguration('fdcSkills.sync')
+		.getConfiguration('skillShelf.sync')
 		.get<number>('intervalSeconds', 30);
 }
 

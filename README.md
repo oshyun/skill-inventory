@@ -1,10 +1,10 @@
-# FDC Skills
+# Skill Shelf
 
-VS Code extension for managing FDC skills from a GitHub repository.
+VS Code extension for managing skills from a GitHub repository.
 
 ## Features
 
-- **Skills Tree View**: View all your FDC skills in a dedicated sidebar panel
+- **Skills Tree View**: View all your skills in a dedicated sidebar panel
 - **GitHub Integration**: Store and sync skills with a GitHub repository
 - **CRUD Operations**: Create, Read, Update, and Delete skills directly from VS Code
 - **GitHub Authentication**: Secure authentication using VS Code's built-in GitHub authentication
@@ -18,10 +18,10 @@ VS Code extension for managing FDC skills from a GitHub repository.
 
 Open VS Code Settings and configure the following:
 
-- `fdcSkills.github.owner`: GitHub username or organization
-- `fdcSkills.github.repo`: Repository name
-- `fdcSkills.github.branch`: Branch name (default: `main`)
-- `fdcSkills.github.skillsPath`: Path to skills directory (default: `skills`)
+- `skillShelf.github.owner`: GitHub username or organization
+- `skillShelf.github.repo`: Repository name
+- `skillShelf.github.branch`: Branch name (default: `main`)
+- `skillShelf.github.skillsPath`: Path to skills directory (default: `skills`)
 
 Or use the **Configure Repository** command from the command palette.
 
@@ -29,13 +29,13 @@ Or use the **Configure Repository** command from the command palette.
 
 | Command | Description |
 |---------|-------------|
-| `FDC Skills: Refresh Skills` | Refresh the skills list from GitHub |
-| `FDC Skills: Add Skill` | Create a new skill |
-| `FDC Skills: Edit Skill` | Edit an existing skill |
-| `FDC Skills: Delete Skill` | Delete a skill |
-| `FDC Skills: Configure Repository` | Configure GitHub repository settings |
-| `FDC Skills: Sync to GitHub` | Sync local changes with GitHub |
-| `FDC Skills: View Skill Details` | View detailed information about a skill |
+| `Skill Shelf: Refresh Skills` | Refresh the skills list from GitHub |
+| `Skill Shelf: Add Skill` | Create a new skill |
+| `Skill Shelf: Edit Skill` | Edit an existing skill |
+| `Skill Shelf: Delete Skill` | Delete a skill |
+| `Skill Shelf: Configure Repository` | Configure GitHub repository settings |
+| `Skill Shelf: Sync to GitHub` | Sync local changes with GitHub |
+| `Skill Shelf: View Skill Details` | View detailed information about a skill |
 
 ## Skill File Format
 

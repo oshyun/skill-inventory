@@ -28,7 +28,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
         }
 
         this.isLoading = true;
-        vscode.commands.executeCommand('setContext', 'fdcSkills.isLoading', true);
+        vscode.commands.executeCommand('setContext', 'skillShelf.isLoading', true);
 
         const sourceLabel = this.getSourceLabel();
         if (this.treeView) {
@@ -38,7 +38,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
 
         try {
             await vscode.window.withProgress(
-                { location: { viewId: 'fdcSkillsView' } },
+                { location: { viewId: 'skillShelfView' } },
                 async () => {
                     if (!this.githubService.isConfigured()) {
                         this.tree = [];
@@ -60,7 +60,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
             this.skills = [];
         } finally {
             this.isLoading = false;
-            vscode.commands.executeCommand('setContext', 'fdcSkills.isLoading', false);
+            vscode.commands.executeCommand('setContext', 'skillShelf.isLoading', false);
             if (this.treeView) {
                 this.treeView.message = undefined;
             }
@@ -101,7 +101,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
             item.iconPath = new vscode.ThemeIcon('file');
             item.contextValue = 'file';
             item.command = {
-                command: 'fdcSkills.openFile',
+                command: 'skillShelf.openFile',
                 title: 'Open File',
                 arguments: [file],
             };
@@ -212,7 +212,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
     }
 
     private getSourceLabel(): string {
-        const config = vscode.workspace.getConfiguration('fdcSkills.github');
+        const config = vscode.workspace.getConfiguration('skillShelf.github');
         const repoUrl = config.get<string>('repoUrl', '');
         const branch = config.get<string>('branch', 'main');
 

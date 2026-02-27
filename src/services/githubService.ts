@@ -81,7 +81,7 @@ export class GitHubService {
     private loadConfig(): void {
         try {
             // 1) Try VS Code settings first
-            const vsConfig = vscode.workspace.getConfiguration('fdcSkills.github');
+            const vsConfig = vscode.workspace.getConfiguration('skillShelf.github');
             const settingsRepoUrl = vsConfig.get<string>('repoUrl', '');
             const settingsPat = vsConfig.get<string>('pat', '');
 

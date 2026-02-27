@@ -36,7 +36,7 @@ export interface SkillFile {
 }
 
 /**
- * Skill data model representing a FDC skill
+ * Skill data model representing a skill
  */
 export interface Skill {
     /** Unique identifier for the skill (folder name) */
