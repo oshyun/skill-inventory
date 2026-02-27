@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as os from 'os';
 import { Skill } from '../models/skill';
 
 const SKILL_FILE = 'SKILL.md';
@@ -6,6 +7,8 @@ const SKILL_FILE = 'SKILL.md';
 const BUILTIN_TARGETS: { key: string; path: string }[] = [
 	{ key: 'githubSkills', path: '.github/skills' },
 	{ key: 'claudeSkills', path: '.claude/skills' },
+	{ key: 'githubSkillsGlobal', path: '~/.github/skills' },
+	{ key: 'claudeSkillsGlobal', path: '~/.claude/skills' },
 ];
 
 export class CopilotService {
@@ -50,6 +53,18 @@ export class CopilotService {
 	}
 
 	/**
+	 * Resolve a sync target path to a URI.
+	 * ~ paths resolve to home directory; relative paths resolve to workspace.
+	 */
+	private static resolveTargetUri(wsFolder: vscode.WorkspaceFolder, targetPath: string): vscode.Uri {
+		if (targetPath.startsWith('~/') || targetPath === '~') {
+			const resolved = targetPath.replace(/^~/, os.homedir());
+			return vscode.Uri.file(resolved);
+		}
+		return vscode.Uri.joinPath(wsFolder.uri, targetPath);
+	}
+
+	/**
 	 * Sync skills into a single target directory.
 	 */
 	private static async syncSkillsToDir(
@@ -57,7 +72,7 @@ export class CopilotService {
 		skillsDir: string,
 		skills: Skill[],
 	): Promise<void> {
-		const skillsUri = vscode.Uri.joinPath(wsFolder.uri, skillsDir);
+		const skillsUri = this.resolveTargetUri(wsFolder, skillsDir);
 		await vscode.workspace.fs.createDirectory(skillsUri);
 		await ensureGitignore(skillsUri);
 
@@ -127,7 +142,7 @@ export class CopilotService {
 		}
 
 		for (const skillsDir of this.getSyncTargets()) {
-			const skillsUri = vscode.Uri.joinPath(wsFolder.uri, skillsDir);
+			const skillsUri = this.resolveTargetUri(wsFolder, skillsDir);
 
 			let entries: [string, vscode.FileType][];
 			try {

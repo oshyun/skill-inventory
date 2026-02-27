@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as os from 'os';
 import { Skill, TreeNode, FolderNode } from '../models/skill';
 import { GitHubService } from '../services/githubService';
 import { CopilotService } from '../services/copilotService';
@@ -186,13 +187,19 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
      * Resolve a skill file's relative path to a local URI using the first sync target.
      */
     private resolveSkillFileUri(skill: Skill, relativePath: string): vscode.Uri {
+        const syncTargets = CopilotService.getSyncTargets();
+        const basePath = syncTargets[0] || '.github/skills';
+        const localPath = skill.localPath || skill.id;
+
+        if (basePath.startsWith('~/') || basePath === '~') {
+            const resolved = basePath.replace(/^~/, os.homedir());
+            return vscode.Uri.file(`${resolved}/${localPath}/${relativePath}`);
+        }
+
         const wsFolder = vscode.workspace.workspaceFolders?.[0];
         if (!wsFolder) {
             return vscode.Uri.parse('');
         }
-        const syncTargets = CopilotService.getSyncTargets();
-        const basePath = syncTargets[0] || '.github/skills';
-        const localPath = skill.localPath || skill.id;
         return vscode.Uri.joinPath(wsFolder.uri, basePath, localPath, relativePath);
     }
 
