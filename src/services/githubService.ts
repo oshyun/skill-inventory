@@ -210,9 +210,8 @@ export class GitHubService {
 
         const octokit = this.ensureAuthenticated();
         const allSkills: Skill[] = [];
-        const skillsPathPrefix = this.config!.skillsPath ? this.config!.skillsPath + '/' : '';
 
-        const walk = async (dirPath: string): Promise<TreeNode[]> => {
+        const walk = async (dirPath: string, relativeBase: string): Promise<TreeNode[]> => {
             const response = await octokit.repos.getContent({
                 owner: this.config!.owner,
                 repo: this.config!.repo,
@@ -231,6 +230,7 @@ export class GitHubService {
                     continue;
                 }
 
+                const relativePath = relativeBase ? `${relativeBase}/${item.name}` : item.name;
                 const skillMdPath = `${item.path}/SKILL.md`;
 
                 try {
@@ -249,10 +249,7 @@ export class GitHubService {
                             skill.id = item.name;
                         }
                         skill.folderPath = item.path;
-                        // Store path relative to skillsPath root
-                        skill.localPath = item.path.startsWith(skillsPathPrefix)
-                            ? item.path.substring(skillsPathPrefix.length)
-                            : item.path;
+                        skill.localPath = relativePath;
                         // Collect all other files in the skill folder
                         skill.files = await this.collectSkillFiles(item.path);
                         allSkills.push(skill);
@@ -260,7 +257,7 @@ export class GitHubService {
                     }
                 } catch {
                     // No SKILL.md — treat as a folder, recurse
-                    const children = await walk(item.path);
+                    const children = await walk(item.path, relativePath);
                     if (children.length > 0) {
                         nodes.push({ type: 'folder', name: item.name, path: item.path, children });
                     }
@@ -271,7 +268,7 @@ export class GitHubService {
         };
 
         try {
-            const tree = await walk(this.config!.skillsPath);
+            const tree = await walk(this.config!.skillsPath, '');
             return { tree, skills: allSkills };
         } catch (error: unknown) {
             if (error instanceof Error && 'status' in error && (error as { status: number }).status === 404) {
