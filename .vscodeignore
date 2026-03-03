@@ -3,6 +3,11 @@
 .claude/**
 .github/**
 src/**
+out/**
+node_modules/**
+scripts/**
+resources/icon-option*.svg
+resources/preview.html
 .gitignore
 .yarnrc
 .env

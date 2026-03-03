@@ -5,6 +5,8 @@
   <circle cx="17" cy="7" r="1.5"/>
   <line x1="12" y1="4" x2="7" y2="5.5"/>
   <line x1="12" y1="4" x2="17" y2="5.5"/>
-  <!-- lightning bolt coming down from branch -->
-  <polygon points="14 9 8 17 13 17 11 23 18 14 13 14 14 9"/>
+  <!-- multiple thin bolts coming down -->
+  <polyline points="9 9 7 15 10 15 8 22"/>
+  <polyline points="13 9 11 15 14 15 12 22"/>
+  <polyline points="17 9 15 15 18 15 16 22"/>
 </svg>
