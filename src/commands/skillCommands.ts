@@ -104,7 +104,7 @@ export function registerSkillCommands(
             // Step 3: Branch
             const currentBranch = vscode.workspace
                 .getConfiguration('skillInventory.source')
-                .get<string>('branch', 'main');
+                .get<string>('branch', 'master');
             const branch = await vscode.window.showInputBox({
                 title: 'Setup Repository (3/7)',
                 prompt: 'Enter the branch name to read skills from',
@@ -198,7 +198,7 @@ export function registerSkillCommands(
             // Save source settings (each triggers onDidChangeConfiguration → refresh)
             const sourceConfig = vscode.workspace.getConfiguration('skillInventory.source');
             await sourceConfig.update('repoUrl', repoUrl.trim(), vscode.ConfigurationTarget.Global);
-            await sourceConfig.update('branch', branch.trim() || 'main', vscode.ConfigurationTarget.Global);
+            await sourceConfig.update('branch', branch.trim() || 'master', vscode.ConfigurationTarget.Global);
             await sourceConfig.update('skillsPath', skillsPath.trim(), vscode.ConfigurationTarget.Global);
 
             const targetConfig: Record<string, boolean> = {};

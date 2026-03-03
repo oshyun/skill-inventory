@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-  <!-- git repo (top) -->
-  <circle cx="12" cy="4" r="2"/>
-  <!-- local folder (bottom-left) -->
-  <path d="M3 20h5.5l1-1.5H5V16H3v4z"/>
-  <!-- local folder (bottom-right) -->
-  <path d="M21 20h-5.5l-1-1.5H19V16h2v4z"/>
-  <!-- sync arrows -->
-  <path d="M10 6.5C7 7.5 5 10 5 13"/>
-  <path d="M14 6.5C17 7.5 19 10 19 13"/>
-  <polyline points="3 11 5 13 7 11"/>
-  <polyline points="21 11 19 13 17 11"/>
+  <!-- git branch (top) -->
+  <circle cx="12" cy="3" r="1.5"/>
+  <circle cx="8" cy="8" r="1.5"/>
+  <circle cx="16" cy="8" r="1.5"/>
+  <line x1="12" y1="4.5" x2="8" y2="6.5"/>
+  <line x1="12" y1="4.5" x2="16" y2="6.5"/>
+  <!-- arrow down -->
+  <line x1="12" y1="10" x2="12" y2="14.5"/>
+  <polyline points="9.5 12.5 12 15 14.5 12.5"/>
+  <!-- local folder (bottom) -->
+  <path d="M4 20h16a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H11l-2-2H5a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1z"/>
 </svg>

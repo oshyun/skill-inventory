@@ -126,7 +126,7 @@
           "skillInventory.source.branch": {
             "order": 3,
             "type": "string",
-            "default": "main",
+            "default": "master",
             "description": "Branch name to read skills from"
           },
           "skillInventory.source.skillsPath": {
