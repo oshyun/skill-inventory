@@ -113,11 +113,18 @@ export class CopilotService {
 		const removeStale = vscode.workspace
 			.getConfiguration('skillInventory.sync')
 			.get<boolean>('removeStaleSkills', false);
-		if (removeStale) {
-			await cleanStale(skillsUri, '', desiredPaths, skillRoots);
-		} else {
-			const staleNames = await findStaleNames(skillsUri, desiredPaths);
-			if (staleNames.length > 0) {
+		const staleNames = await findStaleNames(skillsUri, desiredPaths);
+		if (staleNames.length > 0) {
+			if (removeStale) {
+				const answer = await vscode.window.showWarningMessage(
+					`${staleNames.length} skill(s) not found in remote will be deleted: ${staleNames.join(', ')}`,
+					{ modal: true },
+					'Delete'
+				);
+				if (answer === 'Delete') {
+					await cleanStale(skillsUri, '', desiredPaths, skillRoots);
+				}
+			} else {
 				vscode.window.showWarningMessage(
 					`Local skills not found in remote: ${staleNames.join(', ')}. Enable removeStaleSkills in settings to delete them automatically.`
 				);
