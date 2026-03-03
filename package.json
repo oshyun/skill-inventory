@@ -140,7 +140,7 @@
             "order": 3,
             "type": "boolean",
             "default": true,
-            "markdownDescription": "When enabled, skills removed from the remote will be flagged for deletion. **You will always be prompted to confirm before anything is deleted** — sync continues normally if you skip.\n\nWhen disabled, stale skills remain on disk and a warning is shown instead.\n\n⚠️ **Regardless of this setting**, any local skill with the same name as a remote skill will be **overwritten on sync**. Local edits are not preserved."
+            "markdownDescription": "When enabled, skills removed from the remote will be flagged for deletion. **You will always be prompted to confirm before anything is deleted.**\n\nWhen disabled, stale skills remain on disk and a warning is shown instead.\n\n⚠️ **Regardless of this setting**, any local skill with the same name as a remote skill will be **overwritten on sync**. Local edits are not preserved."
           }
         }
       },
