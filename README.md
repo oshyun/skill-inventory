@@ -1,6 +1,6 @@
 # Skill Inventory
 
-Fetch skills from a GitHub repository and automatically sync them to local paths where AI agents (Claude Code, GitHub Copilot, etc.) can reference them.
+Sync skills between a Git repository and the local paths your AI agents reference — Claude Code, GitHub Copilot, and more.
 
 ## Features
 

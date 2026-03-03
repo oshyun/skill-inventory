@@ -1,7 +1,7 @@
 {
   "name": "skill-inventory",
   "displayName": "Skill Inventory",
-  "description": "Manage and sync skills from a GitHub repository",
+  "description": "Sync skills between a Git repository and local AI agent reference paths.",
   "version": "0.0.0",
   "publisher": "oshyun",
   "engines": {
