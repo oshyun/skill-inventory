@@ -182,7 +182,7 @@
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test",
-    "package": "bash build.sh"
+    "package": "bash scripts/build.sh"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
