@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { TreeNode } from '../models/skill';
 import { GitHubService } from '../services/githubService';
 import { SkillsTreeProvider } from '../providers/skillsTreeProvider';
-import { CopilotService } from '../services/copilotService';
+import { CopilotService, DEFAULT_SYNC_TARGETS } from '../services/copilotService';
 import { PAT_SECRET_KEY } from '../utils';
 
 /**
@@ -126,14 +126,7 @@ export function registerSkillCommands(
             }
 
             // Step 4: Sync target paths
-            const TARGET_PATHS: { label: string; picked: boolean }[] = [
-                { label: '.agents/skills',  picked: false },
-                { label: '.claude/skills',  picked: true  },
-                { label: '.github/skills',  picked: false },
-                { label: '~/.agents/skills', picked: false },
-                { label: '~/.claude/skills', picked: true  },
-                { label: '~/.github/skills', picked: false },
-            ];
+            const TARGET_PATHS = DEFAULT_SYNC_TARGETS.map(({ path, enabled }) => ({ label: path, picked: enabled }));
 
             const selectedPaths = await vscode.window.showQuickPick(TARGET_PATHS, {
                 title: 'Setup Repository (4/4)',

@@ -4,10 +4,11 @@ import { SkillsTreeProvider } from './providers/skillsTreeProvider';
 import { registerSkillCommands } from './commands/skillCommands';
 import { CopilotService } from './services/copilotService';
 import { PAT_SECRET_KEY, showMessageWithAction } from './utils';
+import { TreeNode } from './models/skill';
 
 let pollingTimer: ReturnType<typeof setInterval> | undefined;
 let lastKnownSha: string | undefined;
-let treeViewRef: vscode.TreeView<any> | undefined;
+let treeViewRef: vscode.TreeView<TreeNode> | undefined;
 
 /** Update the context key and tree-view description badge for sync state */
 function updateSyncContext(): void {

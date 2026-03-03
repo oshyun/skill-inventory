@@ -4,20 +4,23 @@ import { expandTilde } from '../utils';
 
 const SKILL_FILE = 'SKILL.md';
 
+export const DEFAULT_SYNC_TARGETS: readonly { path: string; enabled: boolean }[] = [
+	{ path: '.agents/skills',   enabled: false },
+	{ path: '.claude/skills',   enabled: true  },
+	{ path: '.github/skills',   enabled: false },
+	{ path: '~/.agents/skills', enabled: false },
+	{ path: '~/.claude/skills', enabled: true  },
+	{ path: '~/.github/skills', enabled: false },
+];
+
 export class CopilotService {
 	/**
 	 * Get configured sync targets from settings.
 	 * Returns array of enabled sync target paths.
 	 */
 	static getSyncTargets(): string[] {
-		const targets = vscode.workspace.getConfiguration('skillInventory').get<Record<string, boolean>>('target', {
-			'.agents/skills': false,
-			'.claude/skills': true,
-			'.github/skills': false,
-			'~/.agents/skills': false,
-			'~/.claude/skills': true,
-			'~/.github/skills': false,
-		});
+		const defaultConfig = Object.fromEntries(DEFAULT_SYNC_TARGETS.map(({ path, enabled }) => [path, enabled]));
+		const targets = vscode.workspace.getConfiguration('skillInventory').get<Record<string, boolean>>('target', defaultConfig);
 		return Object.entries(targets)
 			.filter(([, enabled]) => enabled)
 			.map(([path]) => path);

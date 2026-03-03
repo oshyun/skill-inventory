@@ -144,15 +144,14 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
         }
 
         if (element.type === 'file') {
-            const file = element as any;
-            const item = new vscode.TreeItem(file.name, vscode.TreeItemCollapsibleState.None);
-            item.tooltip = file.path;
+            const item = new vscode.TreeItem(element.name, vscode.TreeItemCollapsibleState.None);
+            item.tooltip = element.path.fsPath;
             item.iconPath = new vscode.ThemeIcon('file');
             item.contextValue = 'file';
             item.command = {
                 command: 'skillInventory.openFile',
                 title: 'Open File',
-                arguments: [file],
+                arguments: [element],
             };
             return item;
         }
