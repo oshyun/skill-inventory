@@ -159,25 +159,25 @@
             "order": 1,
             "type": "boolean",
             "default": true,
-            "markdownDescription": "**[프로젝트]** `.github/skills/` — GitHub Copilot이 현재 프로젝트에서 스킬을 인식합니다."
+            "markdownDescription": "**[프로젝트]** `.github/skills/`를 동기화합니다."
           },
           "skillInventory.sync.targets.claudeSkills": {
             "order": 2,
             "type": "boolean",
             "default": true,
-            "markdownDescription": "**[프로젝트]** `.claude/skills/` — Claude Code가 현재 프로젝트에서 스킬을 참조합니다."
+            "markdownDescription": "**[프로젝트]** `.claude/skills/`를 동기화합니다."
           },
           "skillInventory.sync.targets.githubSkillsGlobal": {
             "order": 3,
             "type": "boolean",
             "default": false,
-            "markdownDescription": "**[전역]** `~/.github/skills/` — GitHub Copilot이 모든 프로젝트에서 스킬을 인식합니다."
+            "markdownDescription": "**[전역]** `~/.github/skills/`를 동기화합니다."
           },
           "skillInventory.sync.targets.claudeSkillsGlobal": {
             "order": 4,
             "type": "boolean",
             "default": false,
-            "markdownDescription": "**[전역]** `~/.claude/skills/` — Claude Code가 모든 프로젝트에서 스킬을 참조합니다."
+            "markdownDescription": "**[전역]** `~/.claude/skills/`를 동기화합니다."
           },
           "skillInventory.sync.targets.custom": {
             "order": 5,
