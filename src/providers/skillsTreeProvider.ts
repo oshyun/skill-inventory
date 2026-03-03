@@ -108,7 +108,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
 
         if (element.type === 'skill') {
             const skill = element.skill;
-            const ignored = CopilotService.getIgnoredSkills().includes(skill.localPath || skill.id);
+            const ignored = CopilotService.getKeepLocalSkills().includes(skill.localPath || skill.id);
             const item = new vscode.TreeItem(skill.name, vscode.TreeItemCollapsibleState.Collapsed);
             item.tooltip = skill.description || skill.name;
             item.description = ignored ? '(ignored)' : (skill.tags?.join(', ') || '');

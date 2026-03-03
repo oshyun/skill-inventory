@@ -202,7 +202,7 @@ export function registerSkillCommands(
         })
     );
 
-    // Ignore skill command
+    // Keep local skill command
     context.subscriptions.push(
         vscode.commands.registerCommand('skillInventory.ignoreSkill', async (node: TreeNode) => {
             if (!node || node.type !== 'skill') {
@@ -210,15 +210,15 @@ export function registerSkillCommands(
             }
             const localPath = node.skill.localPath || node.skill.id;
             const config = vscode.workspace.getConfiguration('skillInventory.sync');
-            const ignored = config.get<string[]>('ignoredSkills', []);
-            if (!ignored.includes(localPath)) {
-                await config.update('ignoredSkills', [...ignored, localPath], vscode.ConfigurationTarget.Global);
+            const kept = config.get<string[]>('keepLocalSkills', []);
+            if (!kept.includes(localPath)) {
+                await config.update('keepLocalSkills', [...kept, localPath], vscode.ConfigurationTarget.Global);
             }
             skillsTreeProvider.refreshTree();
         })
     );
 
-    // Unignore skill command
+    // Release local skill command
     context.subscriptions.push(
         vscode.commands.registerCommand('skillInventory.unignoreSkill', async (node: TreeNode) => {
             if (!node || node.type !== 'skill') {
@@ -226,8 +226,8 @@ export function registerSkillCommands(
             }
             const localPath = node.skill.localPath || node.skill.id;
             const config = vscode.workspace.getConfiguration('skillInventory.sync');
-            const ignored = config.get<string[]>('ignoredSkills', []);
-            await config.update('ignoredSkills', ignored.filter(s => s !== localPath), vscode.ConfigurationTarget.Global);
+            const kept = config.get<string[]>('keepLocalSkills', []);
+            await config.update('keepLocalSkills', kept.filter(s => s !== localPath), vscode.ConfigurationTarget.Global);
             skillsTreeProvider.refreshTree();
         })
     );

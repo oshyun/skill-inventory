@@ -67,8 +67,6 @@ export class CopilotService {
 		// Track skill root paths so cleanStale doesn't recurse into them
 		const skillRoots = new Set<string>();
 
-		const ignoredSkills = CopilotService.getIgnoredSkills();
-
 		for (const skill of skills) {
 			const localPath = skill.localPath || skill.id;
 			skillRoots.add(localPath);
@@ -76,11 +74,6 @@ export class CopilotService {
 			const parts = localPath.split('/');
 			for (let i = 1; i <= parts.length; i++) {
 				desiredPaths.add(parts.slice(0, i).join('/'));
-			}
-
-			// Skip ignored skills — keep their paths in desiredPaths so they're not deleted
-			if (ignoredSkills.includes(localPath)) {
-				continue;
 			}
 
 			const dirUri = vscode.Uri.joinPath(skillsUri, localPath);
@@ -114,6 +107,15 @@ export class CopilotService {
 				}
 				await vscode.workspace.fs.writeFile(destUri, Buffer.from(file.content, 'utf-8'));
 			}
+		}
+
+		// keepLocalSkills: ensure stale-but-kept skills are never treated as deletable
+		for (const localPath of CopilotService.getKeepLocalSkills()) {
+			const parts = localPath.split('/');
+			for (let i = 1; i <= parts.length; i++) {
+				desiredPaths.add(parts.slice(0, i).join('/'));
+			}
+			skillRoots.add(localPath);
 		}
 
 		// Remove stale directories (but don't recurse into skill roots)
@@ -179,10 +181,10 @@ export class CopilotService {
 		}
 	}
 
-	static getIgnoredSkills(): string[] {
+	static getKeepLocalSkills(): string[] {
 		return vscode.workspace
 			.getConfiguration('skillInventory.sync')
-			.get<string[]>('ignoredSkills', []);
+			.get<string[]>('keepLocalSkills', []);
 	}
 
 	static isAutoSyncEnabled(): boolean {

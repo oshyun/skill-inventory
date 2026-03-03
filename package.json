@@ -171,12 +171,12 @@
             "default": true,
             "markdownDescription": "When enabled, skills removed from the remote will be flagged for deletion. **You will always be prompted to confirm before anything is deleted.**\n\nWhen disabled, stale skills remain on disk and a warning is shown instead."
           },
-          "skillInventory.sync.ignoredSkills": {
+          "skillInventory.sync.keepLocalSkills": {
             "order": 4,
             "type": "array",
             "items": { "type": "string" },
             "default": [],
-            "description": "Skills whose local files are protected from remote sync. The skill is still fetched and shown in the tree, but local files will not be overwritten or deleted. Use the skill folder name only — e.g. 'my-skill'. Right-click a skill in the tree view to protect or unprotect it."
+            "description": "Skills to keep locally even after they are removed from the remote. Only affects stale deletion — sync (write/overwrite) is unaffected. Use the skill folder name only — e.g. 'my-skill'. Right-click a skill in the tree view to add or remove it."
           }
         }
       },
