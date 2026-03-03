@@ -155,29 +155,29 @@
         "title": "동기화 대상",
         "order": 3,
         "properties": {
-          "skillInventory.sync.targets.githubSkills": {
+          "skillInventory.sync.targets.enabled": {
             "order": 1,
-            "type": "boolean",
-            "default": true,
-            "markdownDescription": "**[프로젝트]** `.github/skills/`를 동기화합니다."
-          },
-          "skillInventory.sync.targets.claudeSkills": {
-            "order": 2,
-            "type": "boolean",
-            "default": true,
-            "markdownDescription": "**[프로젝트]** `.claude/skills/`를 동기화합니다."
-          },
-          "skillInventory.sync.targets.githubSkillsGlobal": {
-            "order": 3,
-            "type": "boolean",
-            "default": false,
-            "markdownDescription": "**[전역]** `~/.github/skills/`를 동기화합니다."
-          },
-          "skillInventory.sync.targets.claudeSkillsGlobal": {
-            "order": 4,
-            "type": "boolean",
-            "default": false,
-            "markdownDescription": "**[전역]** `~/.claude/skills/`를 동기화합니다."
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                ".github/skills",
+                ".claude/skills",
+                "~/.github/skills",
+                "~/.claude/skills"
+              ],
+              "enumDescriptions": [
+                "[프로젝트] 현재 워크스페이스",
+                "[프로젝트] 현재 워크스페이스",
+                "[전역] 홈 디렉토리",
+                "[전역] 홈 디렉토리"
+              ]
+            },
+            "default": [
+              ".github/skills",
+              ".claude/skills"
+            ],
+            "description": "동기화할 대상 경로 목록"
           },
           "skillInventory.sync.targets.custom": {
             "order": 5,

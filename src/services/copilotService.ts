@@ -4,13 +4,6 @@ import { Skill } from '../models/skill';
 
 const SKILL_FILE = 'SKILL.md';
 
-const BUILTIN_TARGETS: { key: string; path: string }[] = [
-	{ key: 'githubSkills', path: '.github/skills' },
-	{ key: 'claudeSkills', path: '.claude/skills' },
-	{ key: 'githubSkillsGlobal', path: '~/.github/skills' },
-	{ key: 'claudeSkillsGlobal', path: '~/.claude/skills' },
-];
-
 export class CopilotService {
 	/**
 	 * Get configured sync targets from settings.
@@ -18,13 +11,8 @@ export class CopilotService {
 	 */
 	static getSyncTargets(): string[] {
 		const config = vscode.workspace.getConfiguration('skillInventory.sync.targets');
-		const paths: string[] = [];
-
-		for (const { key, path } of BUILTIN_TARGETS) {
-			if (config.get<boolean>(key, true)) {
-				paths.push(path);
-			}
-		}
+		const enabled = config.get<string[]>('enabled', ['.github/skills', '.claude/skills']);
+		const paths = [...enabled];
 
 		const custom = config.get<string[]>('custom', []);
 		for (const p of custom) {
