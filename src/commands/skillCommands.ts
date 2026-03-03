@@ -113,7 +113,7 @@ export function registerSkillCommands(
 
             const selectedPaths = await vscode.window.showQuickPick(TARGET_PATHS, {
                 title: '저장소 설정 (3/4)',
-                placeHolder: '동기화할 경로를 선택하세요 (스페이스바로 체크)',
+                placeHolder: '동기화할 경로를 선택하세요',
                 canPickMany: true,
                 ignoreFocusOut: true,
             });
