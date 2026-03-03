@@ -13,14 +13,17 @@ export const DEFAULT_SYNC_TARGETS: readonly { path: string; enabled: boolean }[]
 	{ path: '~/.github/skills', enabled: false },
 ];
 
+const DEFAULT_SYNC_CONFIG: Record<string, boolean> = Object.fromEntries(
+	DEFAULT_SYNC_TARGETS.map(({ path, enabled }) => [path, enabled])
+);
+
 export class CopilotService {
 	/**
 	 * Get configured sync targets from settings.
 	 * Returns array of enabled sync target paths.
 	 */
 	static getSyncTargets(): string[] {
-		const defaultConfig = Object.fromEntries(DEFAULT_SYNC_TARGETS.map(({ path, enabled }) => [path, enabled]));
-		const targets = vscode.workspace.getConfiguration('skillInventory').get<Record<string, boolean>>('target', defaultConfig);
+		const targets = vscode.workspace.getConfiguration('skillInventory').get<Record<string, boolean>>('target', DEFAULT_SYNC_CONFIG);
 		return Object.entries(targets)
 			.filter(([, enabled]) => enabled)
 			.map(([path]) => path);
