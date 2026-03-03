@@ -95,7 +95,7 @@
     "configuration": [
       {
         "id": "github",
-        "title": "GitHub 연결",
+        "title": "Source Git Repo",
         "order": 1,
         "properties": {
           "skillInventory.github.repoUrl": {
