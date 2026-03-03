@@ -59,7 +59,8 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
         } catch (error) {
             console.error('Error fetching skills:', error);
             const message = getErrorMessage(error);
-            const isAuthError = message.toLowerCase().includes('authenticate') || message.includes('401');
+            const msg = message.toLowerCase();
+            const isAuthError = msg.includes('authenticate') || msg.includes('bad credentials') || msg.includes('401');
             if (isAuthError) {
                 showMessageWithAction(
                     'error',
