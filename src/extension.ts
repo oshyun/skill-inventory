@@ -109,6 +109,16 @@ export function activate(context: vscode.ExtensionContext) {
 		})
 	);
 
+	// Warn if chat.useAgentSkills is not enabled
+	checkAgentSkillsConfig();
+	context.subscriptions.push(
+		vscode.workspace.onDidChangeConfiguration((e) => {
+			if (e.affectsConfiguration('chat.useAgentSkills')) {
+				checkAgentSkillsConfig();
+			}
+		})
+	);
+
 	// Always try to load skills on startup (config is from .env file)
 	skillsTreeProvider.refresh().then(async () => {
 		lastKnownSha = await githubService.getLatestCommitSha();
@@ -164,6 +174,20 @@ function startPolling(githubService: GitHubService, provider: SkillsTreeProvider
 			// ignore polling errors
 		}
 	}, seconds * 1000);
+}
+
+function checkAgentSkillsConfig(): void {
+	const enabled = vscode.workspace.getConfiguration('chat').get<boolean>('useAgentSkills', false);
+	if (!enabled) {
+		vscode.window.showWarningMessage(
+			'Skill Inventory: GitHub Copilot이 스킬을 인식하려면 chat.useAgentSkills를 활성화해야 합니다.',
+			'설정 열기'
+		).then(selection => {
+			if (selection === '설정 열기') {
+				vscode.commands.executeCommand('workbench.action.openSettings', 'chat.useAgentSkills');
+			}
+		});
+	}
 }
 
 function stopPolling(): void {
