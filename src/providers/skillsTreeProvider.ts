@@ -36,10 +36,10 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
         const syncEnabled = syncConfig.get<boolean>('enabled', true);
         const interval = syncConfig.get<number>('intervalSeconds', 30);
         const syncNote = syncEnabled
-            ? `\nAuto-sync is on — updates every ${interval}s.`
-            : '\nAuto-sync is off. You can enable it in settings.';
+            ? `Auto-sync on · every ${interval}s`
+            : `Auto-sync off`;
         if (this.treeView) {
-            this.treeView.message = `Loading skills from ${sourceLabel}...${syncNote}`;
+            this.treeView.message = `Loading from ${sourceLabel} · ${syncNote}`;
         }
         this._onDidChangeTreeData.fire();
 
