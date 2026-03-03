@@ -20,19 +20,19 @@ Fetch skills from a GitHub repository and automatically sync them to local paths
 
 ### Source
 
-| Setting | Description |
-|---|---|
-| `skillInventory.source.repoUrl` | GitHub repository URL |
-| `skillInventory.source.pat` | Personal Access Token (required for private repos) |
-| `skillInventory.source.branch` | Branch to read from (default: `master`) |
+| Setting                            | Description                                           |
+| ---------------------------------- | ----------------------------------------------------- |
+| `skillInventory.source.repoUrl`    | GitHub repository URL                                 |
+| `skillInventory.source.pat`        | Personal Access Token (required for private repos)    |
+| `skillInventory.source.branch`     | Branch to read from (default: `master`)               |
 | `skillInventory.source.skillsPath` | Skills root path inside the repo (default: `/skills`) |
 
 ### Sync
 
-| Setting | Description |
-|---|---|
-| `skillInventory.sync.autoSync` | Enable periodic auto sync |
-| `skillInventory.sync.intervalSeconds` | Polling interval in seconds (min: 30) |
+| Setting                                 | Description                                                                      |
+| --------------------------------------- | -------------------------------------------------------------------------------- |
+| `skillInventory.sync.autoSync`          | Enable periodic auto sync                                                        |
+| `skillInventory.sync.intervalSeconds`   | Polling interval in seconds (min: 30)                                            |
 | `skillInventory.sync.removeStaleSkills` | Delete local skills that no longer exist in the remote (prompts before deletion) |
 
 > **Note:** Regardless of `removeStaleSkills`, any local skill file with the same name as a remote skill will be overwritten on sync. Local edits are not preserved.
@@ -56,34 +56,11 @@ Default:
 
 ## Commands
 
-| Command | Description |
-|---|---|
-| `Skill Inventory: Refresh Skills` | Fetch latest skills from the source repository |
-| `Skill Inventory: Configure Repository` | Open settings filtered to Skill Inventory |
-| `Skill Inventory: Setup Repository` | Run the guided setup wizard |
-
-## Skill Format
-
-Each skill is a folder in the repository containing a `SKILL.md` file:
-
-```
-my-skill/
-├── SKILL.md         # YAML frontmatter + markdown body
-└── references/      # Optional reference files
-    └── *.md
-```
-
-`SKILL.md` example:
-
-```markdown
----
-name: Code Review
-description: Reviews code for best practices
-tags: [coding, review]
----
-
-Your skill instructions go here...
-```
+| Command                                 | Description                                    |
+| --------------------------------------- | ---------------------------------------------- |
+| `Skill Inventory: Refresh Skills`       | Fetch latest skills from the source repository |
+| `Skill Inventory: Configure Repository` | Open settings filtered to Skill Inventory      |
+| `Skill Inventory: Setup Repository`     | Run the guided setup wizard                    |
 
 ## License
 
