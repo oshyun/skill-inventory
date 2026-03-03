@@ -63,8 +63,8 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
             if (isAuthError) {
                 showMessageWithAction(
                     'error',
-                    'GitHub authentication failed. Your Personal Access Token may be invalid or expired.',
-                    'Change Personal Access Token',
+                    'GitHub authentication failed. Your Personal Access Token (PAT) may be invalid or expired.',
+                    'Change Personal Access Token (PAT)',
                     'skillInventory.changePat'
                 );
             } else {
