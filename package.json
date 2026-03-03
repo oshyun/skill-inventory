@@ -163,7 +163,7 @@
               "~/.claude/skills": true,
               "~/.github/skills": false
             },
-            "markdownDescription": "Sync target paths as a map of `path → enabled`.\n\nExample: `{\".claude/skills\": true, \"~/.config/my-tool/skills\": true}`"
+            "description": "Local paths to sync skills into. Set a path to true to enable it."
           }
         }
       }
