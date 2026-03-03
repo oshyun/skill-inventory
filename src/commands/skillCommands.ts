@@ -124,8 +124,11 @@ export function registerSkillCommands(
 
             // Step 4: Remove stale skills option
             const staleAnswer = await vscode.window.showWarningMessage(
-                'Automatically delete local skills that are removed from the remote repository?\n\nWhen enabled, you will be prompted before any deletion occurs.',
-                { modal: true },
+                'Automatically delete local skills that are removed from the remote repository?',
+                {
+                    modal: true,
+                    detail: 'When enabled, you will always be prompted to confirm before anything is deleted. Sync continues normally if you skip.\n\nWhen disabled, stale skills remain on disk and a warning is shown instead.',
+                },
                 'Enable (recommended)',
                 'Disable'
             );
