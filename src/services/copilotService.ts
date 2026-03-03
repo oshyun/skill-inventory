@@ -122,16 +122,21 @@ export class CopilotService {
 					`${staleNames.length} skill(s) not found in remote will be deleted: ${staleNames.join(', ')}`,
 					{
 						modal: true,
-						detail: 'Skipping deletion will not affect the rest of the sync.\nTo stop seeing this prompt, disable "Remove Stale Skills" in settings.',
+						detail: 'Skipping deletion will not affect the rest of the sync.',
 					},
 					'Delete',
-					'Skip',
-					'Open Settings'
+					'Skip This Time',
+					'Always Keep Local'
 				);
 				if (answer === 'Delete') {
 					await cleanStale(skillsUri, '', desiredPaths, skillRoots);
-				} else if (answer === 'Open Settings') {
-					vscode.commands.executeCommand('workbench.action.openSettings', 'skillInventory.sync.removeStaleSkills');
+				} else if (answer === 'Always Keep Local') {
+					const config = vscode.workspace.getConfiguration('skillInventory.sync');
+					const kept = config.get<string[]>('keepLocalSkills', []);
+					const toAdd = staleNames.filter(n => !kept.includes(n));
+					if (toAdd.length > 0) {
+						await config.update('keepLocalSkills', [...kept, ...toAdd], vscode.ConfigurationTarget.Global);
+					}
 				}
 			} else {
 				vscode.window.showWarningMessage(
