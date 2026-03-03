@@ -61,7 +61,6 @@
       {
         "command": "skillInventory.viewSkill",
         "title": "View Skill Details",
-        "icon": "$(eye)",
         "category": "Skill Inventory"
       },
       {
