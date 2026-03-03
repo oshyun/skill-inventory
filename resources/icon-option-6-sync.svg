@@ -1,12 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-  <!-- git branch (top) -->
-  <circle cx="12" cy="2.5" r="1.5"/>
-  <circle cx="7" cy="7" r="1.5"/>
-  <circle cx="17" cy="7" r="1.5"/>
-  <line x1="12" y1="4" x2="7" y2="5.5"/>
-  <line x1="12" y1="4" x2="17" y2="5.5"/>
-  <!-- multiple thin bolts coming down -->
-  <polyline points="9 9 7 15 10 15 8 22"/>
-  <polyline points="13 9 11 15 14 15 12 22"/>
-  <polyline points="17 9 15 15 18 15 16 22"/>
+  <!-- simple git: circle + fork lines only -->
+  <circle cx="12" cy="3" r="1.5"/>
+  <line x1="12" y1="4.5" x2="7" y2="8.5"/>
+  <line x1="12" y1="4.5" x2="17" y2="8.5"/>
+  <!-- bolts wider apart -->
+  <polyline points="7 10 5 16 8.5 16 6.5 23"/>
+  <polyline points="12 10 10 16 13.5 16 11.5 23"/>
+  <polyline points="17 10 15 16 18.5 16 16.5 23"/>
 </svg>

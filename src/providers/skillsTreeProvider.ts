@@ -63,8 +63,8 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
             if (isAuthError) {
                 showMessageWithAction(
                     'error',
-                    'GitHub 인증 실패: PAT(Personal Access Token)가 잘못되었거나 만료되었습니다.',
-                    'PAT 변경',
+                    'GitHub authentication failed. Your PAT may be invalid or expired.',
+                    'Change PAT',
                     'skillInventory.changePat'
                 );
             } else {
