@@ -1,97 +1,123 @@
 # Skill Inventory
 
-VS Code extension for managing skills from a GitHub repository.
+VS Code extension that fetches skills from a Git repository and syncs them to local paths for AI agents (Claude Code, GitHub Copilot, etc.) to reference.
 
 ## Features
 
-- **Skills Tree View**: View all your skills in a dedicated sidebar panel
-- **GitHub Integration**: Store and sync skills with a GitHub repository
-- **CRUD Operations**: Create, Read, Update, and Delete skills directly from VS Code
-- **GitHub Authentication**: Secure authentication using VS Code's built-in GitHub authentication
+- **Skills Tree View**: View all skills from the source repository in a dedicated sidebar panel
+- **Auto Sync**: Periodically detects remote changes and syncs skills to configured local paths
+- **Multi-target Sync**: Sync to multiple paths simultaneously (`.claude/skills`, `~/.claude/skills`, `.github/skills`, etc.)
+- **Guided Setup**: Step-by-step setup wizard for repository, sync paths, and agent settings
 
 ## Installation
 
-1. Install the extension from the VS Code Marketplace (or install from VSIX for development)
-2. Configure your GitHub repository settings
+Install from VSIX:
+
+```bash
+code --install-extension skill-inventory-x.x.x.vsix --force
+```
 
 ## Configuration
 
-Open VS Code Settings and configure the following:
+Settings are organized into three sections:
 
-- `skillInventory.github.owner`: GitHub username or organization
-- `skillInventory.github.repo`: Repository name
-- `skillInventory.github.branch`: Branch name (default: `main`)
-- `skillInventory.github.skillsPath`: Path to skills directory (default: `skills`)
+### Source
+| Key | Description |
+|-----|-------------|
+| `skillInventory.source.repoUrl` | Git repository URL |
+| `skillInventory.source.pat` | Personal Access Token (private repos) |
+| `skillInventory.source.branch` | Branch name (default: `master`) |
+| `skillInventory.source.skillsPath` | Skills root path in the repo (default: `/skills`) |
 
-Or use the **Configure Repository** command from the command palette.
+### Sync
+| Key | Description |
+|-----|-------------|
+| `skillInventory.sync.autoSync` | Enable periodic auto sync |
+| `skillInventory.sync.intervalSeconds` | Sync interval in seconds (min: 30) |
+| `skillInventory.sync.removeStaleSkills` | Delete local skills removed from remote |
+
+### Target
+| Key | Description |
+|-----|-------------|
+| `skillInventory.target` | Sync target paths as `{"path": true/false}` |
+
+Default targets:
+
+```json
+{
+  ".agents/skills": false,
+  ".claude/skills": true,
+  ".github/skills": false,
+  "~/.agents/skills": false,
+  "~/.claude/skills": true,
+  "~/.github/skills": false
+}
+```
 
 ## Commands
 
 | Command | Description |
 |---------|-------------|
-| `Skill Inventory: Refresh Skills` | Refresh the skills list from GitHub |
-| `Skill Inventory: Add Skill` | Create a new skill |
-| `Skill Inventory: Edit Skill` | Edit an existing skill |
-| `Skill Inventory: Delete Skill` | Delete a skill |
-| `Skill Inventory: Configure Repository` | Configure GitHub repository settings |
-| `Skill Inventory: Sync to GitHub` | Sync local changes with GitHub |
-| `Skill Inventory: View Skill Details` | View detailed information about a skill |
+| `Skill Inventory: Refresh Skills` | Fetch latest skills from the source repository |
+| `Skill Inventory: Configure Repository` | Open settings filtered to Skill Inventory |
+| `Skill Inventory: 저장소 설정` | Run the guided setup wizard |
+| `Skill Inventory: View Skill Details` | Expand and focus a skill node |
 
-## Skill File Format
+## Skill Format
 
-Skills are stored as Markdown files with YAML frontmatter:
+Each skill is a folder in the repository containing a `SKILL.md` file:
+
+```
+my-skill/
+├── SKILL.md         # YAML frontmatter + markdown body
+└── references/      # Optional reference files
+    └── *.md
+```
+
+`SKILL.md` format:
 
 ```markdown
 ---
-id: skill-123456789
 name: Code Review
 description: Reviews code for best practices
 tags: [coding, review]
-createdAt: 2024-01-01T00:00:00.000Z
-updatedAt: 2024-01-01T00:00:00.000Z
 ---
 
-Your skill content/prompt goes here...
+Your skill content goes here...
 ```
 
 ## Development
 
-### Prerequisites
-
-- Node.js 18+
-- npm or yarn
-
-### Setup
+### Build
 
 ```bash
-# Install dependencies
-npm install
+# VSIX packaging
+npm run package
+# or
+bash scripts/build.sh
 
-# Compile TypeScript
-npm run compile
-
-# Watch for changes
-npm run watch
+# TypeScript type check
+npx tsc --noEmit
 ```
-
-### Running the Extension
-
-1. Press `F5` in VS Code to launch the Extension Development Host
-2. The extension will be available in the new VS Code window
 
 ### Project Structure
 
 ```
 src/
-├── extension.ts              # Extension entry point
-├── providers/
-│   └── skillsTreeProvider.ts # Tree view provider for skills
+├── extension.ts              # Entry point — activate/deactivate, polling loop
+├── models/skill.ts           # Data models and markdown parsing utilities
 ├── services/
-│   └── githubService.ts      # GitHub API service
-├── models/
-│   └── skill.ts              # Skill data model
+│   ├── githubService.ts      # GitHub API client (Octokit)
+│   └── copilotService.ts     # Local file sync
+├── providers/
+│   └── skillsTreeProvider.ts # VS Code TreeDataProvider
 └── commands/
     └── skillCommands.ts      # Command handlers
+
+scripts/
+├── bump-version.js           # Auto version from git commit count
+├── build.sh                  # Build script
+└── install-latest.sh         # Install latest VSIX (run from VS Code terminal)
 ```
 
 ## License
