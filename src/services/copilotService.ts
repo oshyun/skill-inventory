@@ -11,7 +11,7 @@ export class CopilotService {
 	 */
 	static getSyncTargets(): string[] {
 		const config = vscode.workspace.getConfiguration('skillInventory.sync.targets');
-		const enabled = config.get<string[]>('enabled', ['.github/skills', '.claude/skills']);
+		const enabled = config.get<string[]>('enabled', ['.github/skills', '.claude/skills', '~/.github/skills', '~/.claude/skills']);
 		const paths = [...enabled];
 
 		const custom = config.get<string[]>('custom', []);

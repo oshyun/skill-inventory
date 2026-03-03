@@ -175,7 +175,9 @@
             },
             "default": [
               ".github/skills",
-              ".claude/skills"
+              ".claude/skills",
+              "~/.github/skills",
+              "~/.claude/skills"
             ],
             "description": "동기화할 대상 경로 목록"
           },
