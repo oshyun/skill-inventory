@@ -1,6 +1,6 @@
 {
-  "name": "skill-shelf",
-  "displayName": "Skill Shelf",
+  "name": "skill-inventory",
+  "displayName": "Skill Inventory",
   "description": "Manage and sync skills from a GitHub repository",
   "version": "0.0.1",
   "publisher": "oshyun",
@@ -18,140 +18,140 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "skill-shelf-explorer",
-          "title": "Skill Shelf",
+          "id": "skill-inventory-explorer",
+          "title": "Skill Inventory",
           "icon": "resources/icon.svg"
         }
       ]
     },
     "views": {
-      "skill-shelf-explorer": [
+      "skill-inventory-explorer": [
         {
-          "id": "skillShelfView",
+          "id": "skillInventoryView",
           "name": "Skills",
-          "contextualTitle": "Skill Shelf"
+          "contextualTitle": "Skill Inventory"
         }
       ]
     },
     "viewsWelcome": [
       {
-        "view": "skillShelfView",
-        "contents": "스킬 저장소가 설정되지 않았습니다.\n\n[저장소 설정](command:skillShelf.setupRepository)",
-        "when": "!skillShelf.isLoading"
+        "view": "skillInventoryView",
+        "contents": "스킬 저장소가 설정되지 않았습니다.\n\n[저장소 설정](command:skillInventory.setupRepository)",
+        "when": "!skillInventory.isLoading"
       }
     ],
     "commands": [
       {
-        "command": "skillShelf.refresh",
+        "command": "skillInventory.refresh",
         "title": "Refresh Skills",
         "icon": "$(refresh)",
-        "category": "Skill Shelf"
+        "category": "Skill Inventory"
       },
       {
-        "command": "skillShelf.configure",
+        "command": "skillInventory.configure",
         "title": "Configure Repository",
         "icon": "$(gear)",
-        "category": "Skill Shelf"
+        "category": "Skill Inventory"
       },
       {
-        "command": "skillShelf.viewSkill",
+        "command": "skillInventory.viewSkill",
         "title": "View Skill Details",
         "icon": "$(eye)",
-        "category": "Skill Shelf"
+        "category": "Skill Inventory"
       },
       {
-        "command": "skillShelf.syncCopilotPrompts",
+        "command": "skillInventory.syncCopilotPrompts",
         "title": "Sync Skills to Copilot Prompts",
         "icon": "$(copilot)",
-        "category": "Skill Shelf"
+        "category": "Skill Inventory"
       },
       {
-        "command": "skillShelf.setupRepository",
+        "command": "skillInventory.setupRepository",
         "title": "저장소 설정",
-        "category": "Skill Shelf"
+        "category": "Skill Inventory"
       }
     ],
     "menus": {
       "view/title": [
         {
-          "command": "skillShelf.refresh",
-          "when": "view == skillShelfView",
+          "command": "skillInventory.refresh",
+          "when": "view == skillInventoryView",
           "group": "navigation"
         },
         {
-          "command": "skillShelf.configure",
-          "when": "view == skillShelfView",
+          "command": "skillInventory.configure",
+          "when": "view == skillInventoryView",
           "group": "navigation"
         }
       ],
       "view/item/context": [
         {
-          "command": "skillShelf.viewSkill",
-          "when": "view == skillShelfView && viewItem == skill",
+          "command": "skillInventory.viewSkill",
+          "when": "view == skillInventoryView && viewItem == skill",
           "group": "inline"
         }
       ]
     },
     "configuration": {
-      "title": "Skill Shelf",
+      "title": "Skill Inventory",
       "properties": {
-        "skillShelf.github.repoUrl": {
+        "skillInventory.github.repoUrl": {
           "type": "string",
           "default": "",
           "description": "GitHub 저장소 URL (예: https://github.com/org/repo 또는 https://github.example.com/org/repo)"
         },
-        "skillShelf.github.pat": {
+        "skillInventory.github.pat": {
           "type": "string",
           "default": "",
           "description": "GitHub Personal Access Token (PAT). 선택사항. 비공개 저장소 접속 시 필요합니다."
         },
-        "skillShelf.github.branch": {
+        "skillInventory.github.branch": {
           "type": "string",
           "default": "master",
           "description": "GitHub 브랜치 이름"
         },
-        "skillShelf.github.skillsPath": {
+        "skillInventory.github.skillsPath": {
           "type": "string",
           "default": "/skills",
           "description": "저장소 내 스킬 디렉토리 경로 (루트는 /)"
         },
-        "skillShelf.sync.enabled": {
+        "skillInventory.sync.enabled": {
           "type": "boolean",
           "default": true,
           "markdownDescription": "스킬 자동 동기화 활성화 여부"
         },
-        "skillShelf.sync.intervalSeconds": {
+        "skillInventory.sync.intervalSeconds": {
           "type": "number",
           "default": 30,
           "minimum": 30,
           "markdownDescription": "원격 저장소 변경 감지 주기(초). 변경이 감지되면 모든 활성화된 동기화 대상에 반영됩니다. on/off는 `sync.enabled`로 제어합니다."
         },
-        "skillShelf.sync.removeStaleSkills": {
+        "skillInventory.sync.removeStaleSkills": {
           "type": "boolean",
           "default": false,
           "markdownDescription": "동기화 시 원격 저장소에 없는 스킬을 로컬에서 삭제. 비활성화하면 원격에서 삭제된 스킬이 로컬 동기화 대상 폴더에 계속 남아있습니다."
         },
-        "skillShelf.sync.targets.githubSkills": {
+        "skillInventory.sync.targets.githubSkills": {
           "type": "boolean",
           "default": true,
           "markdownDescription": "워크스페이스 `.github/skills/`에 동기화. **GitHub Copilot**이 이 경로의 스킬을 자동 인식합니다. 현재 프로젝트에만 적용됩니다."
         },
-        "skillShelf.sync.targets.claudeSkills": {
+        "skillInventory.sync.targets.claudeSkills": {
           "type": "boolean",
           "default": true,
           "markdownDescription": "워크스페이스 `.claude/skills/`에 동기화. **Claude Code**가 프로젝트 컨텍스트에서 이 경로의 스킬을 참조합니다. 현재 프로젝트에만 적용됩니다."
         },
-        "skillShelf.sync.targets.githubSkillsGlobal": {
+        "skillInventory.sync.targets.githubSkillsGlobal": {
           "type": "boolean",
           "default": false,
           "markdownDescription": "홈 디렉토리 `~/.github/skills/`에 동기화. **GitHub Copilot**이 모든 프로젝트에서 전역으로 이 스킬을 참조합니다. 모든 워크스페이스에 영향을 줍니다."
         },
-        "skillShelf.sync.targets.claudeSkillsGlobal": {
+        "skillInventory.sync.targets.claudeSkillsGlobal": {
           "type": "boolean",
           "default": false,
           "markdownDescription": "홈 디렉토리 `~/.claude/skills/`에 동기화. **Claude Code**가 모든 프로젝트에서 전역으로 이 스킬을 참조합니다. 모든 워크스페이스에 영향을 줍니다."
         },
-        "skillShelf.sync.targets.custom": {
+        "skillInventory.sync.targets.custom": {
           "type": "array",
           "items": {
             "type": "string"

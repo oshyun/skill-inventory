@@ -28,10 +28,10 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
         }
 
         this.isLoading = true;
-        vscode.commands.executeCommand('setContext', 'skillShelf.isLoading', true);
+        vscode.commands.executeCommand('setContext', 'skillInventory.isLoading', true);
 
         const sourceLabel = this.getSourceLabel();
-        const syncConfig = vscode.workspace.getConfiguration('skillShelf.sync');
+        const syncConfig = vscode.workspace.getConfiguration('skillInventory.sync');
         const syncEnabled = syncConfig.get<boolean>('enabled', true);
         const interval = syncConfig.get<number>('intervalSeconds', 30);
         const syncNote = syncEnabled
@@ -44,7 +44,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
 
         try {
             await vscode.window.withProgress(
-                { location: { viewId: 'skillShelfView' } },
+                { location: { viewId: 'skillInventoryView' } },
                 async () => {
                     if (!this.githubService.isConfigured()) {
                         this.tree = [];
@@ -66,7 +66,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
             this.skills = [];
         } finally {
             this.isLoading = false;
-            vscode.commands.executeCommand('setContext', 'skillShelf.isLoading', false);
+            vscode.commands.executeCommand('setContext', 'skillInventory.isLoading', false);
             if (this.treeView) {
                 this.treeView.message = undefined;
             }
@@ -107,7 +107,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
             item.iconPath = new vscode.ThemeIcon('file');
             item.contextValue = 'file';
             item.command = {
-                command: 'skillShelf.openFile',
+                command: 'skillInventory.openFile',
                 title: 'Open File',
                 arguments: [file],
             };
@@ -221,7 +221,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
     }
 
     private getSourceLabel(): string {
-        const config = vscode.workspace.getConfiguration('skillShelf.github');
+        const config = vscode.workspace.getConfiguration('skillInventory.github');
         const repoUrl = config.get<string>('repoUrl', '');
         const branch = config.get<string>('branch', 'main');
 

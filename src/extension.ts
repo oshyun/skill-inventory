@@ -11,14 +11,14 @@ let treeViewRef: vscode.TreeView<any> | undefined;
 /** Update the context key and tree-view description badge for sync state */
 function updateSyncContext(): void {
 	const enabled = CopilotService.isAutoSyncEnabled();
-	vscode.commands.executeCommand('setContext', 'skillShelf.syncEnabled', enabled);
+	vscode.commands.executeCommand('setContext', 'skillInventory.syncEnabled', enabled);
 }
 
 /**
  * This method is called when your extension is activated
  */
 export function activate(context: vscode.ExtensionContext) {
-	console.log('Skill Shelf Manager is now active!');
+	console.log('Skill Inventory Manager is now active!');
 
 	// Initialize services with extension path for .env file
 	const githubService = new GitHubService(context.extensionPath);
@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const skillsTreeProvider = new SkillsTreeProvider(githubService);
 
 	// Register tree view
-	const treeView = vscode.window.createTreeView('skillShelfView', {
+	const treeView = vscode.window.createTreeView('skillInventoryView', {
 		treeDataProvider: skillsTreeProvider,
 		showCollapseAll: true,
 	});
@@ -44,7 +44,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Register Copilot sync command
 	context.subscriptions.push(
-		vscode.commands.registerCommand('skillShelf.syncCopilotPrompts', async () => {
+		vscode.commands.registerCommand('skillInventory.syncCopilotPrompts', async () => {
 			const skills = skillsTreeProvider.getSkills();
 			if (skills.length === 0) {
 				vscode.window.showWarningMessage('No skills loaded. Refresh skills first.');
@@ -76,13 +76,13 @@ export function activate(context: vscode.ExtensionContext) {
 	// Listen for configuration changes
 	context.subscriptions.push(
 		vscode.workspace.onDidChangeConfiguration(async (e) => {
-			if (e.affectsConfiguration('skillShelf.github')) {
+			if (e.affectsConfiguration('skillInventory.github')) {
 				githubService.refreshConfig();
 				lastKnownSha = undefined;
 				skillsTreeProvider.refresh();
 			}
 
-			if (e.affectsConfiguration('skillShelf.sync.enabled')) {
+			if (e.affectsConfiguration('skillInventory.sync.enabled')) {
 				updateSyncContext();
 				startPolling(githubService, skillsTreeProvider);
 				if (CopilotService.isAutoSyncEnabled()) {
@@ -103,7 +103,7 @@ export function activate(context: vscode.ExtensionContext) {
 				}
 			}
 
-			if (e.affectsConfiguration('skillShelf.sync.intervalSeconds')) {
+			if (e.affectsConfiguration('skillInventory.sync.intervalSeconds')) {
 				startPolling(githubService, skillsTreeProvider);
 			}
 		})
@@ -137,7 +137,7 @@ function updateDescription(changed?: boolean): void {
 
 function getPollingInterval(): number {
 	return vscode.workspace
-		.getConfiguration('skillShelf.sync')
+		.getConfiguration('skillInventory.sync')
 		.get<number>('intervalSeconds', 30);
 }
 

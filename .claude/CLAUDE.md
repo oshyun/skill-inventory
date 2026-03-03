@@ -27,7 +27,7 @@ npm test
 npm run package
 
 # VS Code에 설치
-code --install-extension skill-shelf-x.x.x.vsix --force
+code --install-extension skill-inventory-x.x.x.vsix --force
 ```
 
 ## 빌드 & 설치
@@ -36,7 +36,7 @@ code --install-extension skill-shelf-x.x.x.vsix --force
 1. `npm version patch --no-git-tag-version` — `package.json` 버전 마지막 자리 +1
 2. `npx vsce package --allow-missing-repository` — TypeScript 컴파일 후 `.vsix` 생성
 
-결과물: 프로젝트 루트에 `skill-shelf-x.x.x.vsix` 파일 생성
+결과물: 프로젝트 루트에 `skill-inventory-x.x.x.vsix` 파일 생성
 
 ### 주의사항
 
@@ -46,7 +46,7 @@ code --install-extension skill-shelf-x.x.x.vsix --force
 
 ## 아키텍처
 
-Skill Shelf는 GitHub 저장소에서 스킬을 불러와 VS Code의 Activity Bar에 트리 뷰로 표시하고, 로컬 워크스페이스의 `syncTargets` 경로들(기본값: `.github/skills`, `.claude/skills`)에 동기화하는 VS Code 익스텐션이다.
+Skill Inventory는 GitHub 저장소에서 스킬을 불러와 VS Code의 Activity Bar에 트리 뷰로 표시하고, 로컬 워크스페이스의 `syncTargets` 경로들(기본값: `.github/skills`, `.claude/skills`)에 동기화하는 VS Code 익스텐션이다.
 
 ### 소스 구조
 
@@ -67,8 +67,8 @@ src/
 
 1. **스킬 로딩**: `GitHubService.fetchTree()` → GitHub API로 디렉토리 트리 탐색 → `SKILL.md`가 있는 폴더는 `SkillNode`, 없는 폴더는 `FolderNode`로 분류
 2. **트리 뷰**: `SkillsTreeProvider`가 트리 구조를 VS Code UI에 렌더링. 스킬 노드 하위 파일은 로컬 `syncTarget` 폴더에서 읽음
-3. **동기화**: 스킬 로드 완료 후 `CopilotService.syncSkills()` 호출 → `skillShelf.sync.targets` 설정의 각 경로로 스킬 파일 기록
-4. **폴링**: `extension.ts`의 `startPolling()` → `skillShelf.sync.intervalSeconds`(초) 마다 최신 커밋 SHA 비교 → 변경 시 refresh 트리거
+3. **동기화**: 스킬 로드 완료 후 `CopilotService.syncSkills()` 호출 → `skillInventory.sync.targets` 설정의 각 경로로 스킬 파일 기록
+4. **폴링**: `extension.ts`의 `startPolling()` → `skillInventory.sync.intervalSeconds`(초) 마다 최신 커밋 SHA 비교 → 변경 시 refresh 트리거
 
 ### 스킬 포맷
 
@@ -84,15 +84,15 @@ my-skill/
 
 ### 설정 구조
 
-- `skillShelf.github.*` — GitHub 연결 정보 (repoUrl, pat, branch, skillsPath). 없으면 extensionPath/.env 또는 워크스페이스/.env로 폴백
-- `skillShelf.sync.enabled` — 스킬 자동 동기화 활성화 여부
-- `skillShelf.sync.intervalSeconds` — 자동 동기화 주기(초), 최소 1
-- `skillShelf.sync.removeStaleSkills` — 원격에 없는 스킬 로컬 삭제 여부
-- `skillShelf.sync.targets.githubSkills` — .github/skills 동기화 여부 (boolean)
-- `skillShelf.sync.targets.claudeSkills` — .claude/skills 동기화 여부 (boolean)
-- `skillShelf.sync.targets.custom` — 추가 동기화 경로 (string[])
+- `skillInventory.github.*` — GitHub 연결 정보 (repoUrl, pat, branch, skillsPath). 없으면 extensionPath/.env 또는 워크스페이스/.env로 폴백
+- `skillInventory.sync.enabled` — 스킬 자동 동기화 활성화 여부
+- `skillInventory.sync.intervalSeconds` — 자동 동기화 주기(초), 최소 1
+- `skillInventory.sync.removeStaleSkills` — 원격에 없는 스킬 로컬 삭제 여부
+- `skillInventory.sync.targets.githubSkills` — .github/skills 동기화 여부 (boolean)
+- `skillInventory.sync.targets.claudeSkills` — .claude/skills 동기화 여부 (boolean)
+- `skillInventory.sync.targets.custom` — 추가 동기화 경로 (string[])
 
 ### Context Keys (VS Code)
 
-- `skillShelf.isLoading` — 스킬 로딩 중 여부 (Welcome 뷰 표시 제어)
-- `skillShelf.syncEnabled` — autoSync 활성화 여부 (enable/disable 버튼 토글 제어)
+- `skillInventory.isLoading` — 스킬 로딩 중 여부 (Welcome 뷰 표시 제어)
+- `skillInventory.syncEnabled` — autoSync 활성화 여부 (enable/disable 버튼 토글 제어)

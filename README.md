@@ -1,4 +1,4 @@
-# Skill Shelf
+# Skill Inventory
 
 VS Code extension for managing skills from a GitHub repository.
 
@@ -18,10 +18,10 @@ VS Code extension for managing skills from a GitHub repository.
 
 Open VS Code Settings and configure the following:
 
-- `skillShelf.github.owner`: GitHub username or organization
-- `skillShelf.github.repo`: Repository name
-- `skillShelf.github.branch`: Branch name (default: `main`)
-- `skillShelf.github.skillsPath`: Path to skills directory (default: `skills`)
+- `skillInventory.github.owner`: GitHub username or organization
+- `skillInventory.github.repo`: Repository name
+- `skillInventory.github.branch`: Branch name (default: `main`)
+- `skillInventory.github.skillsPath`: Path to skills directory (default: `skills`)
 
 Or use the **Configure Repository** command from the command palette.
 
@@ -29,13 +29,13 @@ Or use the **Configure Repository** command from the command palette.
 
 | Command | Description |
 |---------|-------------|
-| `Skill Shelf: Refresh Skills` | Refresh the skills list from GitHub |
-| `Skill Shelf: Add Skill` | Create a new skill |
-| `Skill Shelf: Edit Skill` | Edit an existing skill |
-| `Skill Shelf: Delete Skill` | Delete a skill |
-| `Skill Shelf: Configure Repository` | Configure GitHub repository settings |
-| `Skill Shelf: Sync to GitHub` | Sync local changes with GitHub |
-| `Skill Shelf: View Skill Details` | View detailed information about a skill |
+| `Skill Inventory: Refresh Skills` | Refresh the skills list from GitHub |
+| `Skill Inventory: Add Skill` | Create a new skill |
+| `Skill Inventory: Edit Skill` | Edit an existing skill |
+| `Skill Inventory: Delete Skill` | Delete a skill |
+| `Skill Inventory: Configure Repository` | Configure GitHub repository settings |
+| `Skill Inventory: Sync to GitHub` | Sync local changes with GitHub |
+| `Skill Inventory: View Skill Details` | View detailed information about a skill |
 
 ## Skill File Format
 
