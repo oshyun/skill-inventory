@@ -118,11 +118,17 @@ export class CopilotService {
 			if (removeStale) {
 				const answer = await vscode.window.showWarningMessage(
 					`${staleNames.length} skill(s) not found in remote will be deleted: ${staleNames.join(', ')}`,
-					{ modal: true },
-					'Delete'
+					{
+						modal: true,
+						detail: 'To stop seeing this prompt, disable "Remove Stale Skills" in settings.',
+					},
+					'Delete',
+					'Open Settings'
 				);
 				if (answer === 'Delete') {
 					await cleanStale(skillsUri, '', desiredPaths, skillRoots);
+				} else if (answer === 'Open Settings') {
+					vscode.commands.executeCommand('workbench.action.openSettings', 'skillInventory.sync.removeStaleSkills');
 				}
 			} else {
 				vscode.window.showWarningMessage(
