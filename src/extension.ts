@@ -43,37 +43,6 @@ export function activate(context: vscode.ExtensionContext) {
 	// Register all commands
 	registerSkillCommands(context, githubService, skillsTreeProvider);
 
-	// Register Copilot sync command
-	context.subscriptions.push(
-		vscode.commands.registerCommand('skillInventory.syncCopilotPrompts', async () => {
-			const skills = skillsTreeProvider.getSkills();
-			if (skills.length === 0) {
-				vscode.window.showWarningMessage('No skills loaded. Refresh skills first.');
-				return;
-			}
-
-			await vscode.window.withProgress(
-				{
-					location: vscode.ProgressLocation.Notification,
-					title: 'Syncing skills to Copilot prompts...',
-					cancellable: false,
-				},
-				async () => {
-					try {
-						await CopilotService.syncSkills(skills);
-						vscode.window.showInformationMessage(
-							`Synced ${skills.length} skill(s) to .github/skills/`
-						);
-					} catch (error) {
-						vscode.window.showErrorMessage(
-							`Copilot sync failed: ${error instanceof Error ? error.message : 'Unknown error'}`
-						);
-					}
-				}
-			);
-		})
-	);
-
 	// Listen for configuration changes
 	context.subscriptions.push(
 		vscode.workspace.onDidChangeConfiguration(async (e) => {

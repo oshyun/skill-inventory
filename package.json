@@ -60,12 +60,6 @@
         "category": "Skill Inventory"
       },
       {
-        "command": "skillInventory.syncCopilotPrompts",
-        "title": "Sync Skills to Copilot Prompts",
-        "icon": "$(copilot)",
-        "category": "Skill Inventory"
-      },
-      {
         "command": "skillInventory.setupRepository",
         "title": "저장소 설정",
         "category": "Skill Inventory"
