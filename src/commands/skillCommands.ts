@@ -64,12 +64,12 @@ export function registerSkillCommands(
         })
     );
 
-    // Setup repository command — guided InputBox workflow (7 steps)
+    // Setup repository command — guided InputBox workflow (4 steps)
     context.subscriptions.push(
         vscode.commands.registerCommand('skillInventory.setupRepository', async () => {
             // Step 1: Repository URL (required)
             const repoUrl = await vscode.window.showInputBox({
-                title: 'Setup Repository (1/7)',
+                title: 'Setup Repository (1/4)',
                 prompt: 'Enter the GitHub repository URL',
                 placeHolder: 'https://github.com/org/repo',
                 ignoreFocusOut: true,
@@ -90,7 +90,7 @@ export function registerSkillCommands(
 
             // Step 2: PAT (optional, stored in SecretStorage — never written to settings.json)
             const pat = await vscode.window.showInputBox({
-                title: 'Setup Repository (2/7)',
+                title: 'Setup Repository (2/4)',
                 prompt: 'Enter your PAT (Personal Access Token)',
                 placeHolder: 'Required for private repositories. Leave blank for public.',
                 password: true,
@@ -106,9 +106,9 @@ export function registerSkillCommands(
                 .getConfiguration('skillInventory.source')
                 .get<string>('branch', 'master');
             const branch = await vscode.window.showInputBox({
-                title: 'Setup Repository (3/7)',
+                title: 'Setup Repository (3/4)',
                 prompt: 'Enter the branch name to read skills from',
-                placeHolder: 'main',
+                placeHolder: 'master',
                 value: currentBranch,
                 ignoreFocusOut: true,
                 validateInput: (value) => {
@@ -123,23 +123,7 @@ export function registerSkillCommands(
                 return; // User cancelled
             }
 
-            // Step 4: Skills path
-            const currentSkillsPath = vscode.workspace
-                .getConfiguration('skillInventory.source')
-                .get<string>('skillsPath', 'skills');
-            const skillsPath = await vscode.window.showInputBox({
-                title: 'Setup Repository (4/7)',
-                prompt: 'Path in the repository where skill folders are located. Use / for repo root.',
-                placeHolder: 'skills',
-                value: currentSkillsPath,
-                ignoreFocusOut: true,
-            });
-
-            if (skillsPath === undefined) {
-                return; // User cancelled
-            }
-
-            // Step 5: Sync target paths
+            // Step 4: Sync target paths
             const TARGET_PATHS: { label: string; picked: boolean }[] = [
                 { label: '.agents/skills',  picked: false },
                 { label: '.claude/skills',  picked: true  },
@@ -150,43 +134,13 @@ export function registerSkillCommands(
             ];
 
             const selectedPaths = await vscode.window.showQuickPick(TARGET_PATHS, {
-                title: 'Setup Repository (5/7)',
+                title: 'Setup Repository (4/4)',
                 placeHolder: 'Select sync target paths',
                 canPickMany: true,
                 ignoreFocusOut: true,
             });
 
             if (selectedPaths === undefined) {
-                return; // User cancelled
-            }
-
-            // Step 6: Remove stale skills option
-            const staleAnswer = await vscode.window.showWarningMessage(
-                'Automatically delete local skills that are removed from the remote repository?',
-                {
-                    modal: true,
-                    detail: 'When enabled, you will always be prompted to confirm before anything is deleted — so it\'s safe to turn on.\n\nWhen disabled, stale skills remain on disk and a warning is shown instead.',
-                },
-                'Enable (recommended)',
-                'Disable'
-            );
-
-            if (staleAnswer === undefined) {
-                return; // User cancelled
-            }
-
-            // Step 7: Auto sync
-            const autoSyncAnswer = await vscode.window.showInformationMessage(
-                'Enable auto-sync?',
-                {
-                    modal: true,
-                    detail: 'When enabled, the extension periodically checks the remote for changes and syncs automatically.\n\nYou can adjust the interval in settings (default: 30s).',
-                },
-                'Enable (recommended)',
-                'Disable'
-            );
-
-            if (autoSyncAnswer === undefined) {
                 return; // User cancelled
             }
 
@@ -199,7 +153,6 @@ export function registerSkillCommands(
             const sourceConfig = vscode.workspace.getConfiguration('skillInventory.source');
             await sourceConfig.update('repoUrl', repoUrl.trim(), vscode.ConfigurationTarget.Global);
             await sourceConfig.update('branch', branch.trim() || 'master', vscode.ConfigurationTarget.Global);
-            await sourceConfig.update('skillsPath', skillsPath.trim(), vscode.ConfigurationTarget.Global);
 
             const targetConfig: Record<string, boolean> = {};
             for (const { label } of TARGET_PATHS) {
@@ -210,14 +163,15 @@ export function registerSkillCommands(
                 targetConfig,
                 vscode.ConfigurationTarget.Global
             );
+            // Auto-sync and stale removal are enabled by default — no need to ask
             await vscode.workspace.getConfiguration('skillInventory.sync').update(
                 'removeStaleSkills',
-                staleAnswer === 'Enable (recommended)',
+                true,
                 vscode.ConfigurationTarget.Global
             );
             await vscode.workspace.getConfiguration('skillInventory.sync').update(
                 'autoSync',
-                autoSyncAnswer === 'Enable (recommended)',
+                true,
                 vscode.ConfigurationTarget.Global
             );
 
