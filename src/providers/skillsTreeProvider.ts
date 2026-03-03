@@ -17,6 +17,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
     private isLoading = false;
     private treeView: vscode.TreeView<TreeNode> | undefined;
     private keepLocalSkillsCache: string[] = [];
+    private loadingSkillIds = new Set<string>();
 
     constructor(private githubService: GitHubService) {}
 
@@ -91,16 +92,24 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
     }
 
     private async fetchFilesAndSync(forceSync: boolean): Promise<void> {
+        for (const skill of this.skills) {
+            this.loadingSkillIds.add(skill.id);
+        }
+        this._onDidChangeTreeData.fire();
+
         try {
             await Promise.all(
                 this.skills.map(async (skill) => {
                     if (skill.folderPath) {
                         skill.files = await this.githubService.collectSkillFiles(skill.folderPath);
                     }
+                    this.loadingSkillIds.delete(skill.id);
+                    this._onDidChangeTreeData.fire();
                 })
             );
-            this._onDidChangeTreeData.fire();
         } catch (error) {
+            this.loadingSkillIds.clear();
+            this._onDidChangeTreeData.fire();
             console.error('Failed to fetch skill files:', error);
         }
 
@@ -123,11 +132,14 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
 
         if (element.type === 'skill') {
             const skill = element.skill;
+            const isLoadingFiles = this.loadingSkillIds.has(skill.id);
             const ignored = this.keepLocalSkillsCache.includes(skill.localPath || skill.id);
             const item = new vscode.TreeItem(skill.name, vscode.TreeItemCollapsibleState.Collapsed);
             item.tooltip = skill.description || skill.name;
             item.description = ignored ? '(ignored)' : (skill.tags?.join(', ') || '');
-            item.iconPath = new vscode.ThemeIcon(ignored ? 'lock' : 'symbol-method');
+            item.iconPath = new vscode.ThemeIcon(
+                isLoadingFiles ? 'loading~spin' : (ignored ? 'lock' : 'symbol-method')
+            );
             item.contextValue = ignored ? 'skill-ignored' : 'skill';
             return item;
         }
