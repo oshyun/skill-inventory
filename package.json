@@ -2,7 +2,7 @@
   "name": "skill-inventory",
   "displayName": "Skill Inventory",
   "description": "Manage and sync skills from a GitHub repository",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "oshyun",
   "engines": {
     "vscode": "^1.85.0"
