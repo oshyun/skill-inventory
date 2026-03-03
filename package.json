@@ -162,7 +162,7 @@
             "type": "array",
             "items": { "type": "string" },
             "default": [],
-            "description": "Skills to keep locally even after they are removed from the remote. Only affects stale deletion — sync (write/overwrite) is unaffected. If the skill still exists in the remote, it will continue to be updated normally. To exclude a skill from sync entirely, use skillBlacklist instead. Use the skill folder name only — e.g. 'my-skill'. Right-click a skill in the tree view to add or remove it."
+            "description": "Skills to keep locally even after they are removed from the remote. Only affects stale deletion — sync (write/overwrite) is unaffected. If the skill still exists in the remote, it will continue to be updated normally. Use the skill folder name only — e.g. 'my-skill'. Right-click a skill in the tree view to add or remove it."
           }
         }
       },

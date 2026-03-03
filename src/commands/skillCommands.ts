@@ -205,31 +205,34 @@ export function registerSkillCommands(
     // Keep local skill command
     context.subscriptions.push(
         vscode.commands.registerCommand('skillInventory.ignoreSkill', async (node: TreeNode) => {
-            if (!node || node.type !== 'skill') {
-                return;
-            }
-            const localPath = node.skill.localPath || node.skill.id;
-            const config = vscode.workspace.getConfiguration('skillInventory.sync');
-            const kept = config.get<string[]>('keepLocalSkills', []);
-            if (!kept.includes(localPath)) {
-                await config.update('keepLocalSkills', [...kept, localPath], vscode.ConfigurationTarget.Global);
-            }
-            skillsTreeProvider.refreshTree();
+            await updateKeepLocalSkills(node, skillsTreeProvider, (kept, localPath) =>
+                kept.includes(localPath) ? kept : [...kept, localPath]
+            );
         })
     );
 
     // Release local skill command
     context.subscriptions.push(
         vscode.commands.registerCommand('skillInventory.unignoreSkill', async (node: TreeNode) => {
-            if (!node || node.type !== 'skill') {
-                return;
-            }
-            const localPath = node.skill.localPath || node.skill.id;
-            const config = vscode.workspace.getConfiguration('skillInventory.sync');
-            const kept = config.get<string[]>('keepLocalSkills', []);
-            await config.update('keepLocalSkills', kept.filter(s => s !== localPath), vscode.ConfigurationTarget.Global);
-            skillsTreeProvider.refreshTree();
+            await updateKeepLocalSkills(node, skillsTreeProvider, (kept, localPath) =>
+                kept.filter(s => s !== localPath)
+            );
         })
     );
 
+}
+
+async function updateKeepLocalSkills(
+    node: TreeNode,
+    provider: SkillsTreeProvider,
+    update: (kept: string[], localPath: string) => string[]
+): Promise<void> {
+    if (!node || node.type !== 'skill') {
+        return;
+    }
+    const localPath = node.skill.localPath || node.skill.id;
+    const config = vscode.workspace.getConfiguration('skillInventory.sync');
+    const kept = config.get<string[]>('keepLocalSkills', []);
+    await config.update('keepLocalSkills', update(kept, localPath), vscode.ConfigurationTarget.Global);
+    provider.refreshTree();
 }

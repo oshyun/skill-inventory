@@ -16,6 +16,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
     private skills: Skill[] = [];
     private isLoading = false;
     private treeView: vscode.TreeView<TreeNode> | undefined;
+    private keepLocalSkillsCache: string[] = [];
 
     constructor(private githubService: GitHubService) {}
 
@@ -86,6 +87,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
             if (this.treeView) {
                 this.treeView.message = undefined;
             }
+            this.keepLocalSkillsCache = CopilotService.getKeepLocalSkills();
             this._onDidChangeTreeData.fire();
 
             if (this.skills.length > 0 && (CopilotService.isAutoSyncEnabled() || forceSync)) {
@@ -108,7 +110,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
 
         if (element.type === 'skill') {
             const skill = element.skill;
-            const ignored = CopilotService.getKeepLocalSkills().includes(skill.localPath || skill.id);
+            const ignored = this.keepLocalSkillsCache.includes(skill.localPath || skill.id);
             const item = new vscode.TreeItem(skill.name, vscode.TreeItemCollapsibleState.Collapsed);
             item.tooltip = skill.description || skill.name;
             item.description = ignored ? '(ignored)' : (skill.tags?.join(', ') || '');
@@ -235,6 +237,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
 
     /** Refresh only the tree UI without re-fetching from remote. */
     public refreshTree(): void {
+        this.keepLocalSkillsCache = CopilotService.getKeepLocalSkills();
         this._onDidChangeTreeData.fire();
     }
 

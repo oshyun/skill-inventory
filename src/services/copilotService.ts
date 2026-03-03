@@ -70,11 +70,7 @@ export class CopilotService {
 		for (const skill of skills) {
 			const localPath = skill.localPath || skill.id;
 			skillRoots.add(localPath);
-			// Register this path and all parent segments
-			const parts = localPath.split('/');
-			for (let i = 1; i <= parts.length; i++) {
-				desiredPaths.add(parts.slice(0, i).join('/'));
-			}
+			registerPath(localPath, desiredPaths);
 
 			const dirUri = vscode.Uri.joinPath(skillsUri, localPath);
 			await vscode.workspace.fs.createDirectory(dirUri);
@@ -111,10 +107,7 @@ export class CopilotService {
 
 		// keepLocalSkills: ensure stale-but-kept skills are never treated as deletable
 		for (const localPath of CopilotService.getKeepLocalSkills()) {
-			const parts = localPath.split('/');
-			for (let i = 1; i <= parts.length; i++) {
-				desiredPaths.add(parts.slice(0, i).join('/'));
-			}
+			registerPath(localPath, desiredPaths);
 			skillRoots.add(localPath);
 		}
 
@@ -262,4 +255,11 @@ async function findStaleNames(
 		}
 	}
 	return stale;
+}
+
+function registerPath(localPath: string, desiredPaths: Set<string>): void {
+	const parts = localPath.split('/');
+	for (let i = 1; i <= parts.length; i++) {
+		desiredPaths.add(parts.slice(0, i).join('/'));
+	}
 }
