@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import { TreeNode } from '../models/skill';
 import { GitHubService } from '../services/githubService';
 import { SkillsTreeProvider } from '../providers/skillsTreeProvider';
+import { CopilotService } from '../services/copilotService';
+import { PAT_SECRET_KEY } from '../utils';
 
 /**
  * Register all skill-related commands
@@ -145,11 +147,7 @@ export function registerSkillCommands(
             }
 
             // Save PAT first so it is available when subsequent config updates trigger a refresh
-            if (pat.trim()) {
-                await context.secrets.store('skillInventory.pat', pat.trim());
-            } else {
-                await context.secrets.delete('skillInventory.pat');
-            }
+            await storePat(context.secrets, pat);
 
             // Save source settings (each triggers onDidChangeConfiguration → refresh)
             const sourceConfig = vscode.workspace.getConfiguration('skillInventory.source');
@@ -216,11 +214,7 @@ export function registerSkillCommands(
                 return; // User cancelled
             }
 
-            if (pat.trim()) {
-                await context.secrets.store('skillInventory.pat', pat.trim());
-            } else {
-                await context.secrets.delete('skillInventory.pat');
-            }
+            await storePat(context.secrets, pat);
 
             // Reload config with the new PAT before refreshing to avoid a 401 flash
             await githubService.refreshConfig();
@@ -249,6 +243,14 @@ export function registerSkillCommands(
 
 }
 
+async function storePat(secrets: vscode.SecretStorage, pat: string): Promise<void> {
+    if (pat.trim()) {
+        await secrets.store(PAT_SECRET_KEY, pat.trim());
+    } else {
+        await secrets.delete(PAT_SECRET_KEY);
+    }
+}
+
 async function updateKeepLocalSkills(
     node: TreeNode,
     provider: SkillsTreeProvider,
@@ -258,8 +260,8 @@ async function updateKeepLocalSkills(
         return;
     }
     const localPath = node.skill.localPath || node.skill.id;
+    const kept = CopilotService.getKeepLocalSkills();
     const config = vscode.workspace.getConfiguration('skillInventory.sync');
-    const kept = config.get<string[]>('keepLocalSkills', []);
     await config.update('keepLocalSkills', update(kept, localPath), vscode.ConfigurationTarget.Global);
     provider.refreshTree();
 }

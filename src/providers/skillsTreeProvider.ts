@@ -1,9 +1,8 @@
 import * as vscode from 'vscode';
-import * as os from 'os';
 import { Skill, TreeNode, FolderNode } from '../models/skill';
 import { GitHubService } from '../services/githubService';
 import { CopilotService } from '../services/copilotService';
-import { getErrorMessage, showMessageWithAction } from '../utils';
+import { expandTilde, getErrorMessage, showMessageWithAction } from '../utils';
 
 /**
  * Tree data provider that mirrors the GitHub repository folder structure.
@@ -179,13 +178,15 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
      * Shows SKILL.md first, then additional files organized by folder structure.
      */
     private buildSkillChildren(skill: Skill): TreeNode[] {
+        const syncTargets = CopilotService.getSyncTargets();
+        const basePath = syncTargets[0] || '.github/skills';
         const children: TreeNode[] = [];
 
         // SKILL.md first
         children.push({
             type: 'file',
             name: 'SKILL.md',
-            path: this.resolveSkillFileUri(skill, 'SKILL.md'),
+            path: this.resolveSkillFileUri(skill, 'SKILL.md', basePath),
             content: skill.rawContent || skill.content,
         });
 
@@ -203,7 +204,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
                 children.push({
                     type: 'file',
                     name: file.relativePath,
-                    path: this.resolveSkillFileUri(skill, file.relativePath),
+                    path: this.resolveSkillFileUri(skill, file.relativePath, basePath),
                     content: file.content,
                 });
             } else {
@@ -227,7 +228,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
                 currentChildren.push({
                     type: 'file',
                     name: parts[parts.length - 1],
-                    path: this.resolveSkillFileUri(skill, file.relativePath),
+                    path: this.resolveSkillFileUri(skill, file.relativePath, basePath),
                     content: file.content,
                 });
             }
@@ -237,16 +238,13 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
     }
 
     /**
-     * Resolve a skill file's relative path to a local URI using the first sync target.
+     * Resolve a skill file's relative path to a local URI using the given sync target base path.
      */
-    private resolveSkillFileUri(skill: Skill, relativePath: string): vscode.Uri {
-        const syncTargets = CopilotService.getSyncTargets();
-        const basePath = syncTargets[0] || '.github/skills';
+    private resolveSkillFileUri(skill: Skill, relativePath: string, basePath: string): vscode.Uri {
         const localPath = skill.localPath || skill.id;
 
         if (basePath.startsWith('~/') || basePath === '~') {
-            const resolved = basePath.replace(/^~/, os.homedir());
-            return vscode.Uri.file(`${resolved}/${localPath}/${relativePath}`);
+            return vscode.Uri.file(`${expandTilde(basePath)}/${localPath}/${relativePath}`);
         }
 
         const wsFolder = vscode.workspace.workspaceFolders?.[0];
@@ -271,15 +269,9 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
     }
 
     private getSourceLabel(): string {
-        const config = vscode.workspace.getConfiguration('skillInventory.source');
-        const repoUrl = config.get<string>('repoUrl', '');
-        const branch = config.get<string>('branch', 'main');
-
-        if (repoUrl) {
-            const match = repoUrl.match(/\/([^/]+)\/([^/]+?)(\.git)?$/);
-            if (match) {
-                return `${match[1]}/${match[2]} (${branch})`;
-            }
+        const cfg = this.githubService.getConfig();
+        if (cfg) {
+            return `${cfg.owner}/${cfg.repo} (${cfg.branch})`;
         }
         return 'GitHub';
     }

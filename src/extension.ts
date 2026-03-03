@@ -3,7 +3,7 @@ import { GitHubService } from './services/githubService';
 import { SkillsTreeProvider } from './providers/skillsTreeProvider';
 import { registerSkillCommands } from './commands/skillCommands';
 import { CopilotService } from './services/copilotService';
-import { showMessageWithAction } from './utils';
+import { PAT_SECRET_KEY, showMessageWithAction } from './utils';
 
 let pollingTimer: ReturnType<typeof setInterval> | undefined;
 let lastKnownSha: string | undefined;
@@ -49,7 +49,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	// Reload config when PAT changes in SecretStorage
 	context.subscriptions.push(
 		context.secrets.onDidChange(async (e) => {
-			if (e.key === 'skillInventory.pat') {
+			if (e.key === PAT_SECRET_KEY) {
 				await githubService.refreshConfig();
 				lastKnownSha = undefined;
 				skillsTreeProvider.refresh();
@@ -57,7 +57,9 @@ export async function activate(context: vscode.ExtensionContext) {
 		})
 	);
 
-	// Listen for configuration changes
+	// Listen for all configuration changes in one handler
+	checkAgentSkillsConfig();
+	checkAgentSkillsLocations();
 	context.subscriptions.push(
 		vscode.workspace.onDidChangeConfiguration(async (e) => {
 			if (e.affectsConfiguration('skillInventory.source')) {
@@ -90,18 +92,15 @@ export async function activate(context: vscode.ExtensionContext) {
 			if (e.affectsConfiguration('skillInventory.sync.intervalSeconds')) {
 				startPolling(githubService, skillsTreeProvider);
 			}
-		})
-	);
 
-	// Warn if chat.useAgentSkills is not enabled
-	checkAgentSkillsConfig();
-	// Warn if .claude/skills is missing from chat.agentSkillsLocations
-	checkAgentSkillsLocations();
-	context.subscriptions.push(
-		vscode.workspace.onDidChangeConfiguration((e) => {
+			if (e.affectsConfiguration('skillInventory.sync.keepLocalSkills')) {
+				skillsTreeProvider.refreshTree();
+			}
+
 			if (e.affectsConfiguration('chat.useAgentSkills')) {
 				checkAgentSkillsConfig();
 			}
+
 			if (e.affectsConfiguration('chat.agentSkillsLocations') ||
 				e.affectsConfiguration('skillInventory.target')) {
 				checkAgentSkillsLocations();

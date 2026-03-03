@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Octokit } from '@octokit/rest';
 import { Skill, SkillFile, TreeNode, markdownToSkill } from '../models/skill';
+import { PAT_SECRET_KEY } from '../utils';
 
 export interface GitHubConfig {
     baseUrl: string;
@@ -32,7 +33,7 @@ export class GitHubService {
     private parseEnvFile(content: string): Record<string, string> {
         const result: Record<string, string> = {};
         const lines = content.split('\n');
-        
+
         for (const line of lines) {
             const trimmed = line.trim();
             if (trimmed && !trimmed.startsWith('#')) {
@@ -44,7 +45,7 @@ export class GitHubService {
                 }
             }
         }
-        
+
         return result;
     }
 
@@ -184,14 +185,14 @@ export class GitHubService {
             return;
         }
 
-        let pat = await this.secrets.get('skillInventory.pat');
+        let pat = await this.secrets.get(PAT_SECRET_KEY);
 
         if (!pat) {
             // One-time migration: if PAT exists in old settings.json, move it to SecretStorage
             const vsConfig = vscode.workspace.getConfiguration('skillInventory.source');
             const legacyPat = vsConfig.get<string>('pat', '');
             if (legacyPat) {
-                await this.secrets.store('skillInventory.pat', legacyPat);
+                await this.secrets.store(PAT_SECRET_KEY, legacyPat);
                 await vsConfig.update('pat', undefined, vscode.ConfigurationTarget.Global);
                 pat = legacyPat;
                 console.log('Migrated PAT from settings to SecretStorage');
@@ -240,6 +241,7 @@ export class GitHubService {
     /**
      * Fetch skills as a tree structure mirroring the GitHub repository layout.
      * Directories with SKILL.md are skill nodes; others are folder nodes.
+     * Sibling directories are fetched in parallel.
      */
     public async fetchTree(): Promise<{ tree: TreeNode[]; skills: Skill[] }> {
         if (!this.isConfigured()) {
@@ -261,13 +263,9 @@ export class GitHubService {
                 return [];
             }
 
-            const nodes: TreeNode[] = [];
+            const dirs = response.data.filter(item => item.type === 'dir');
 
-            for (const item of response.data) {
-                if (item.type !== 'dir') {
-                    continue;
-                }
-
+            const nodeResults = await Promise.all(dirs.map(async (item): Promise<TreeNode | null> => {
                 const relativePath = relativeBase ? `${relativeBase}/${item.name}` : item.name;
                 const skillMdPath = `${item.path}/SKILL.md`;
 
@@ -289,18 +287,20 @@ export class GitHubService {
                         skill.folderPath = item.path;
                         skill.localPath = relativePath;
                         allSkills.push(skill);
-                        nodes.push({ type: 'skill', skill });
+                        return { type: 'skill' as const, skill };
                     }
+                    return null;
                 } catch {
                     // No SKILL.md — treat as a folder, recurse
                     const children = await walk(item.path, relativePath);
                     if (children.length > 0) {
-                        nodes.push({ type: 'folder', name: item.name, path: item.path, children });
+                        return { type: 'folder' as const, name: item.name, path: item.path, children };
                     }
+                    return null;
                 }
-            }
+            }));
 
-            return nodes;
+            return nodeResults.filter((n): n is TreeNode => n !== null);
         };
 
         try {
@@ -316,6 +316,7 @@ export class GitHubService {
 
     /**
      * Recursively collect all files in a skill folder (excluding SKILL.md).
+     * Files within each directory are fetched in parallel.
      */
     public async collectSkillFiles(folderPath: string): Promise<SkillFile[]> {
         const octokit = this.ensureAuthenticated();
@@ -338,7 +339,7 @@ export class GitHubService {
                 return;
             }
 
-            for (const entry of response.data) {
+            await Promise.all(response.data.map(async (entry) => {
                 const relativePath = relativeBase ? `${relativeBase}/${entry.name}` : entry.name;
 
                 if (entry.type === 'dir') {
@@ -359,7 +360,7 @@ export class GitHubService {
                         // skip unreadable files
                     }
                 }
-            }
+            }));
         };
 
         await walkDir(folderPath, '');
