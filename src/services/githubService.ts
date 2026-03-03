@@ -17,10 +17,13 @@ export class GitHubService {
     private octokit: Octokit | null = null;
     private config: GitHubConfig | null = null;
     private extensionPath: string;
+    private secrets: vscode.SecretStorage;
+    private configFromSettings = false;
 
-    constructor(extensionPath: string) {
+    constructor(extensionPath: string, secrets: vscode.SecretStorage) {
         this.extensionPath = extensionPath;
-        this.loadConfig();
+        this.secrets = secrets;
+        this.loadConfigSync();
     }
 
     /**

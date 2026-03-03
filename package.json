@@ -118,12 +118,6 @@
             "default": "",
             "description": "GitHub repository URL to fetch skills from"
           },
-          "skillInventory.source.pat": {
-            "order": 2,
-            "type": "string",
-            "default": "",
-            "description": "GitHub Personal Access Token (PAT). Required for private repositories."
-          },
           "skillInventory.source.branch": {
             "order": 3,
             "type": "string",
