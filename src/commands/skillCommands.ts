@@ -91,7 +91,7 @@ export function registerSkillCommands(
             // Step 2: PAT (optional, stored in SecretStorage — never written to settings.json)
             const pat = await vscode.window.showInputBox({
                 title: 'Setup Repository (2/7)',
-                prompt: 'Enter your Personal Access Token (PAT)',
+                prompt: 'Enter your PAT (Personal Access Token)',
                 placeHolder: 'Required for private repositories. Leave blank for public.',
                 password: true,
                 ignoreFocusOut: true,
@@ -249,9 +249,9 @@ export function registerSkillCommands(
     context.subscriptions.push(
         vscode.commands.registerCommand('skillInventory.changePat', async () => {
             const pat = await vscode.window.showInputBox({
-                title: 'Change Personal Access Token (PAT)',
-                prompt: 'Enter your new Personal Access Token (PAT)',
-                placeHolder: 'Leave blank to remove the Personal Access Token (PAT) for public repositories',
+                title: 'Change PAT (Personal Access Token)',
+                prompt: 'Enter your new PAT (Personal Access Token)',
+                placeHolder: 'Leave blank to remove the PAT (Personal Access Token) for public repositories',
                 password: true,
                 ignoreFocusOut: true,
             });
@@ -268,7 +268,7 @@ export function registerSkillCommands(
 
             // Reload config with the new PAT before refreshing to avoid a 401 flash
             await githubService.refreshConfig();
-            vscode.window.showInformationMessage('Personal Access Token (PAT) updated. Refreshing skills...');
+            vscode.window.showInformationMessage('PAT (Personal Access Token) updated. Refreshing skills...');
             await skillsTreeProvider.refresh();
         })
     );
