@@ -182,7 +182,7 @@
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test",
-    "package": "node scripts/bump-version.js && npx vsce package --allow-missing-repository && git checkout -- package.json && bash install-latest-vsix.sh"
+    "package": "bash install-latest-vsix.sh"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
