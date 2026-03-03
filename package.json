@@ -96,7 +96,7 @@
             "order": 1,
             "type": "string",
             "default": "",
-            "description": "스킬을 가져올 GitHub 저장소 URL (예: https://github.com/org/repo)"
+            "description": "스킬을 가져올 GitHub 저장소 URL"
           },
           "skillInventory.source.pat": {
             "order": 2,
