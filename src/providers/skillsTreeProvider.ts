@@ -80,13 +80,35 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
             }
             this.keepLocalSkillsCache = CopilotService.getKeepLocalSkills();
             this._onDidChangeTreeData.fire();
+        }
 
-            if (this.skills.length > 0 && (CopilotService.isAutoSyncEnabled() || forceSync)) {
-                try {
-                    await CopilotService.syncSkills(this.skills);
-                } catch (error) {
-                    console.error('Copilot prompt sync failed:', error);
-                }
+        // Phase 2: fetch additional files in background, then sync
+        if (this.skills.length > 0) {
+            this.fetchFilesAndSync(forceSync).catch(err =>
+                console.error('Background file fetch failed:', err)
+            );
+        }
+    }
+
+    private async fetchFilesAndSync(forceSync: boolean): Promise<void> {
+        try {
+            await Promise.all(
+                this.skills.map(async (skill) => {
+                    if (skill.folderPath) {
+                        skill.files = await this.githubService.collectSkillFiles(skill.folderPath);
+                    }
+                })
+            );
+            this._onDidChangeTreeData.fire();
+        } catch (error) {
+            console.error('Failed to fetch skill files:', error);
+        }
+
+        if (CopilotService.isAutoSyncEnabled() || forceSync) {
+            try {
+                await CopilotService.syncSkills(this.skills);
+            } catch (error) {
+                console.error('Copilot prompt sync failed:', error);
             }
         }
     }

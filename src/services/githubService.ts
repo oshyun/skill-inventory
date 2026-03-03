@@ -250,8 +250,6 @@ export class GitHubService {
                         }
                         skill.folderPath = item.path;
                         skill.localPath = relativePath;
-                        // Collect all other files in the skill folder
-                        skill.files = await this.collectSkillFiles(item.path);
                         allSkills.push(skill);
                         nodes.push({ type: 'skill', skill });
                     }
@@ -281,7 +279,7 @@ export class GitHubService {
     /**
      * Recursively collect all files in a skill folder (excluding SKILL.md).
      */
-    private async collectSkillFiles(folderPath: string): Promise<SkillFile[]> {
+    public async collectSkillFiles(folderPath: string): Promise<SkillFile[]> {
         const octokit = this.ensureAuthenticated();
         const files: SkillFile[] = [];
 
