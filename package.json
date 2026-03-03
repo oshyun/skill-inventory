@@ -129,7 +129,7 @@
         "title": "Sync",
         "order": 2,
         "properties": {
-          "skillInventory.sync.enabled": {
+          "skillInventory.sync.autoSync": {
             "order": 1,
             "type": "boolean",
             "default": true,

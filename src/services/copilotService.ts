@@ -161,7 +161,7 @@ export class CopilotService {
 	static isAutoSyncEnabled(): boolean {
 		return vscode.workspace
 			.getConfiguration('skillInventory.sync')
-			.get<boolean>('enabled', true);
+			.get<boolean>('autoSync', true);
 	}
 }
 

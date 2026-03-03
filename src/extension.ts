@@ -82,7 +82,7 @@ export function activate(context: vscode.ExtensionContext) {
 				skillsTreeProvider.refresh();
 			}
 
-			if (e.affectsConfiguration('skillInventory.sync.enabled')) {
+			if (e.affectsConfiguration('skillInventory.sync.autoSync')) {
 				updateSyncContext();
 				startPolling(githubService, skillsTreeProvider);
 				if (CopilotService.isAutoSyncEnabled()) {
