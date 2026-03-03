@@ -152,7 +152,7 @@
       },
       {
         "id": "syncTargets",
-        "title": "동기화 대상",
+        "title": "Sync Skills Locations",
         "order": 3,
         "properties": {
           "skillInventory.sync.targets": {
