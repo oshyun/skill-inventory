@@ -3,6 +3,7 @@ import { GitHubService } from './services/githubService';
 import { SkillsTreeProvider } from './providers/skillsTreeProvider';
 import { registerSkillCommands } from './commands/skillCommands';
 import { CopilotService } from './services/copilotService';
+import { showMessageWithAction } from './utils';
 
 let pollingTimer: ReturnType<typeof setInterval> | undefined;
 let lastKnownSha: string | undefined;
@@ -185,14 +186,13 @@ function startPolling(githubService: GitHubService, provider: SkillsTreeProvider
 function checkAgentSkillsConfig(): void {
 	const enabled = vscode.workspace.getConfiguration('chat').get<boolean>('useAgentSkills', false);
 	if (!enabled) {
-		vscode.window.showWarningMessage(
+		showMessageWithAction(
+			'warning',
 			'Skill Inventory: GitHub Copilot이 스킬을 인식하려면 chat.useAgentSkills를 활성화해야 합니다.',
-			'설정 열기'
-		).then(selection => {
-			if (selection === '설정 열기') {
-				vscode.commands.executeCommand('workbench.action.openSettings', 'chat.useAgentSkills');
-			}
-		});
+			'설정 열기',
+			'workbench.action.openSettings',
+			'chat.useAgentSkills'
+		);
 	}
 }
 
@@ -204,14 +204,13 @@ function checkAgentSkillsLocations(): void {
 
 	const hasClaudeSkills = Object.keys(locations).some(loc => loc.includes('.claude/skills'));
 	if (!hasClaudeSkills) {
-		vscode.window.showWarningMessage(
+		showMessageWithAction(
+			'warning',
 			'Skill Inventory: chat.agentSkillsLocations에 .claude/skills 경로가 없습니다. Claude Code가 스킬을 인식하지 못할 수 있으니 경로를 점검해 주세요.',
-			'설정 열기'
-		).then(selection => {
-			if (selection === '설정 열기') {
-				vscode.commands.executeCommand('workbench.action.openSettings', 'chat.agentSkillsLocations');
-			}
-		});
+			'설정 열기',
+			'workbench.action.openSettings',
+			'chat.agentSkillsLocations'
+		);
 	}
 }
 

@@ -3,6 +3,7 @@ import * as os from 'os';
 import { Skill, TreeNode, FolderNode } from '../models/skill';
 import { GitHubService } from '../services/githubService';
 import { CopilotService } from '../services/copilotService';
+import { getErrorMessage, showMessageWithAction } from '../utils';
 
 /**
  * Tree data provider that mirrors the GitHub repository folder structure.
@@ -49,14 +50,12 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
                     if (!this.githubService.isConfigured()) {
                         this.tree = [];
                         this.skills = [];
-                        vscode.window.showErrorMessage(
+                        showMessageWithAction(
+                            'error',
                             'GitHub 저장소가 설정되지 않았습니다. 저장소 URL을 설정해주세요.',
-                            '저장소 설정'
-                        ).then(selection => {
-                            if (selection === '저장소 설정') {
-                                vscode.commands.executeCommand('skillInventory.setupRepository');
-                            }
-                        });
+                            '저장소 설정',
+                            'skillInventory.setupRepository'
+                        );
                     } else {
                         const result = await this.githubService.fetchTree();
                         this.tree = result.tree;
@@ -66,17 +65,16 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
             );
         } catch (error) {
             console.error('Error fetching skills:', error);
-            const message = error instanceof Error ? error.message : 'Unknown error';
+            const message = getErrorMessage(error);
             const isAuthError = message.toLowerCase().includes('authenticate') || message.includes('401');
             if (isAuthError) {
-                vscode.window.showErrorMessage(
+                showMessageWithAction(
+                    'error',
                     'GitHub 인증 실패: PAT(Personal Access Token) 설정이 필요합니다.',
-                    'PAT 설정'
-                ).then(selection => {
-                    if (selection === 'PAT 설정') {
-                        vscode.commands.executeCommand('workbench.action.openSettings', 'skillInventory.source.pat');
-                    }
-                });
+                    'PAT 설정',
+                    'workbench.action.openSettings',
+                    'skillInventory.source.pat'
+                );
             } else {
                 vscode.window.showErrorMessage(`Failed to fetch skills: ${message}`);
             }
