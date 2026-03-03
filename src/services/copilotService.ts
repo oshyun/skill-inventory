@@ -119,7 +119,7 @@ export class CopilotService {
 			const staleNames = await findStaleNames(skillsUri, desiredPaths);
 			if (staleNames.length > 0) {
 				vscode.window.showWarningMessage(
-					`로컬에 원격 저장소에 없는 스킬이 있습니다: ${staleNames.join(', ')}. 설정에서 removeStaleSkills를 켜면 자동 삭제됩니다.`
+					`Local skills not found in remote: ${staleNames.join(', ')}. Enable removeStaleSkills in settings to delete them automatically.`
 				);
 			}
 		}

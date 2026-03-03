@@ -12,7 +12,7 @@ Fetch skills from a GitHub repository and automatically sync them to local paths
 ## Getting Started
 
 1. Open the **Skill Inventory** panel in the Activity Bar
-2. Click **저장소 설정** (or run `Skill Inventory: 저장소 설정` from the Command Palette)
+2. Click **Setup Repository** (or run `Skill Inventory: Setup Repository` from the Command Palette)
 3. Follow the setup wizard: repository URL → PAT (if private) → sync paths → stale skill policy
 4. Skills are fetched and synced automatically
 
@@ -60,7 +60,7 @@ Default:
 |---|---|
 | `Skill Inventory: Refresh Skills` | Fetch latest skills from the source repository |
 | `Skill Inventory: Configure Repository` | Open settings filtered to Skill Inventory |
-| `Skill Inventory: 저장소 설정` | Run the guided setup wizard |
+| `Skill Inventory: Setup Repository` | Run the guided setup wizard |
 
 ## Skill Format
 

@@ -36,7 +36,7 @@
     "viewsWelcome": [
       {
         "view": "skillInventoryView",
-        "contents": "스킬 저장소가 설정되지 않았습니다.\n\n[저장소 설정](command:skillInventory.setupRepository)",
+        "contents": "No repository configured.\n\n[Setup Repository](command:skillInventory.setupRepository)",
         "when": "!skillInventory.isLoading"
       }
     ],
@@ -61,7 +61,7 @@
       },
       {
         "command": "skillInventory.setupRepository",
-        "title": "저장소 설정",
+        "title": "Setup Repository",
         "category": "Skill Inventory"
       }
     ],
@@ -96,25 +96,25 @@
             "order": 1,
             "type": "string",
             "default": "",
-            "description": "스킬을 가져올 GitHub 저장소 URL"
+            "description": "GitHub repository URL to fetch skills from"
           },
           "skillInventory.source.pat": {
             "order": 2,
             "type": "string",
             "default": "",
-            "description": "GitHub Personal Access Token (PAT). 비공개 저장소 접속 시 필요합니다."
+            "description": "GitHub Personal Access Token (PAT). Required for private repositories."
           },
           "skillInventory.source.branch": {
             "order": 3,
             "type": "string",
             "default": "master",
-            "description": "읽어올 브랜치 이름"
+            "description": "Branch name to read skills from"
           },
           "skillInventory.source.skillsPath": {
             "order": 4,
             "type": "string",
             "default": "/skills",
-            "description": "저장소 내 스킬 루트 경로 (저장소 전체를 사용하려면 /)"
+            "description": "Root path of skills inside the repository. Use / for the entire repository."
           }
         }
       },
@@ -127,20 +127,20 @@
             "order": 1,
             "type": "boolean",
             "default": true,
-            "description": "원격 저장소 변경을 주기적으로 감지하여 자동 동기화"
+            "description": "Periodically check for remote changes and sync skills automatically"
           },
           "skillInventory.sync.intervalSeconds": {
             "order": 2,
             "type": "number",
             "default": 30,
             "minimum": 30,
-            "description": "변경 감지 주기(초). sync.autoSync가 켜져 있을 때만 유효합니다."
+            "description": "Polling interval in seconds. Only effective when sync.autoSync is enabled."
           },
           "skillInventory.sync.removeStaleSkills": {
             "order": 3,
             "type": "boolean",
             "default": false,
-            "markdownDescription": "원격에서 삭제된 스킬을 로컬 동기화 대상에서도 삭제. 꺼두면 원격 삭제 스킬이 로컬에 그대로 남습니다.\n\n⚠️ **이 옵션과 관계없이**, 원격과 동일한 이름의 스킬이 로컬에 있으면 동기화 시 **원격 버전으로 덮어씁니다.** 로컬 수정 내용은 유지되지 않습니다."
+            "markdownDescription": "Delete local skills that have been removed from the remote. When disabled, stale skills remain on disk.\n\n⚠️ **Regardless of this setting**, any local skill with the same name as a remote skill will be **overwritten on sync**. Local edits are not preserved."
           }
         }
       },
@@ -163,7 +163,7 @@
               "~/.claude/skills": true,
               "~/.github/skills": false
             },
-            "markdownDescription": "동기화 대상 경로 목록\n\n예: `{\".claude/skills\": true, \"~/.config/my-tool/skills\": true}`"
+            "markdownDescription": "Sync target paths as a map of `path → enabled`.\n\nExample: `{\".claude/skills\": true, \"~/.config/my-tool/skills\": true}`"
           }
         }
       }

@@ -194,7 +194,7 @@ export class GitHubService {
      */
     private ensureAuthenticated(): Octokit {
         if (!this.octokit || !this.config) {
-            throw new Error('GitHub 저장소가 설정되지 않았습니다. 저장소 URL을 설정해주세요.');
+            throw new Error('No repository configured. Please set a repository URL.');
         }
         return this.octokit;
     }
@@ -205,7 +205,7 @@ export class GitHubService {
      */
     public async fetchTree(): Promise<{ tree: TreeNode[]; skills: Skill[] }> {
         if (!this.isConfigured()) {
-            throw new Error('GitHub 저장소가 설정되지 않았습니다. 저장소 URL을 설정해주세요.');
+            throw new Error('No repository configured. Please set a repository URL.');
         }
 
         const octokit = this.ensureAuthenticated();

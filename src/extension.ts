@@ -117,8 +117,8 @@ function updateDescription(changed?: boolean): void {
 	}
 	const now = formatTime(new Date());
 	treeViewRef.description = changed
-		? `변경 감지 ${now}`
-		: `마지막 확인 ${now}`;
+		? `Updated ${now}`
+		: `Checked ${now}`;
 }
 
 function getPollingInterval(): number {
@@ -157,8 +157,8 @@ function checkAgentSkillsConfig(): void {
 	if (!enabled) {
 		showMessageWithAction(
 			'warning',
-			'Skill Inventory: GitHub Copilot이 스킬을 인식하려면 chat.useAgentSkills를 활성화해야 합니다.',
-			'설정 열기',
+			'Skill Inventory: Enable chat.useAgentSkills so GitHub Copilot can discover your skills.',
+			'Open Settings',
 			'workbench.action.openSettings',
 			'chat.useAgentSkills'
 		);
@@ -175,8 +175,8 @@ function checkAgentSkillsLocations(): void {
 	if (!hasClaudeSkills) {
 		showMessageWithAction(
 			'warning',
-			'Skill Inventory: chat.agentSkillsLocations에 .claude/skills 경로가 없습니다. Claude Code가 스킬을 인식하지 못할 수 있으니 경로를 점검해 주세요.',
-			'설정 열기',
+			'Skill Inventory: .claude/skills is not in chat.agentSkillsLocations. Claude Code may not discover your skills.',
+			'Open Settings',
 			'workbench.action.openSettings',
 			'chat.agentSkillsLocations'
 		);

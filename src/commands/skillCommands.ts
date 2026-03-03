@@ -51,7 +51,7 @@ export function registerSkillCommands(
                     const document = await vscode.workspace.openTextDocument({ content: file.content, language: lang });
                     await vscode.window.showTextDocument(document, { preview: true });
                 } else {
-                    vscode.window.showErrorMessage('파일을 열 수 없습니다. 동기화가 완료된 후 다시 시도해주세요.');
+                    vscode.window.showErrorMessage('Cannot open file. Please wait for sync to complete and try again.');
                 }
             }
         })
@@ -69,16 +69,16 @@ export function registerSkillCommands(
         vscode.commands.registerCommand('skillInventory.setupRepository', async () => {
             // Step 1: Repository URL (required)
             const repoUrl = await vscode.window.showInputBox({
-                title: '저장소 설정 (1/4)',
-                prompt: 'GitHub 저장소 URL을 입력하세요',
+                title: 'Setup Repository (1/4)',
+                prompt: 'Enter the GitHub repository URL',
                 placeHolder: 'https://github.com/org/repo',
                 ignoreFocusOut: true,
                 validateInput: (value) => {
                     if (!value.trim()) {
-                        return '저장소 URL은 필수입니다.';
+                        return 'Repository URL is required.';
                     }
                     if (!/^https?:\/\/[^/]+\/[^/]+\/[^/]+/.test(value.trim())) {
-                        return '올바른 GitHub 저장소 URL을 입력해주세요. (예: https://github.com/org/repo)';
+                        return 'Enter a valid GitHub repository URL. (e.g. https://github.com/org/repo)';
                     }
                     return undefined;
                 },
@@ -90,9 +90,9 @@ export function registerSkillCommands(
 
             // Step 2: PAT (optional)
             const pat = await vscode.window.showInputBox({
-                title: '저장소 설정 (2/4)',
-                prompt: 'Personal Access Token (PAT)을 입력하세요',
-                placeHolder: '비공개 저장소인 경우 입력 (공개 저장소는 비워두세요)',
+                title: 'Setup Repository (2/4)',
+                prompt: 'Enter your Personal Access Token (PAT)',
+                placeHolder: 'Required for private repositories. Leave blank for public.',
                 password: true,
                 ignoreFocusOut: true,
             });
@@ -112,8 +112,8 @@ export function registerSkillCommands(
             ];
 
             const selectedPaths = await vscode.window.showQuickPick(TARGET_PATHS, {
-                title: '저장소 설정 (3/4)',
-                placeHolder: '동기화할 경로를 선택하세요',
+                title: 'Setup Repository (3/4)',
+                placeHolder: 'Select sync target paths',
                 canPickMany: true,
                 ignoreFocusOut: true,
             });
@@ -124,10 +124,10 @@ export function registerSkillCommands(
 
             // Step 4: Remove stale skills option
             const staleAnswer = await vscode.window.showWarningMessage(
-                '소스 저장소에 없는 스킬을 로컬에서 자동 삭제할까요?\n\n⚠️ 활성화하면 소스 저장소에서 삭제된 스킬이 로컬 동기화 경로에서도 제거됩니다.',
+                'Automatically delete local skills that are removed from the remote repository?\n\n⚠️ When enabled, skills deleted from the source will also be removed from your local sync paths.',
                 { modal: true },
-                '삭제 활성화',
-                '비활성화 (안전)'
+                'Enable',
+                'Disable (safe)'
             );
 
             if (staleAnswer === undefined) {
@@ -151,7 +151,7 @@ export function registerSkillCommands(
             );
             await vscode.workspace.getConfiguration('skillInventory.sync').update(
                 'removeStaleSkills',
-                staleAnswer === '삭제 활성화',
+                staleAnswer === 'Enable',
                 vscode.ConfigurationTarget.Global
             );
 
@@ -161,11 +161,11 @@ export function registerSkillCommands(
                 .get<boolean>('useAgentSkills', false);
             if (!agentSkillsEnabled) {
                 const enable = await vscode.window.showInformationMessage(
-                    'Chat: Agent Skills Locations 옵션이 꺼져 있습니다. 활성화하면 AI 에이전트가 동기화된 스킬을 인식할 수 있습니다. 지금 켤까요?',
+                    'Chat: Agent Skills Locations is currently disabled. Enable it so AI agents can discover synced skills.',
                     { modal: true },
-                    '활성화'
+                    'Enable'
                 );
-                if (enable === '활성화') {
+                if (enable === 'Enable') {
                     await vscode.workspace.getConfiguration('chat').update(
                         'useAgentSkills',
                         true,
@@ -174,7 +174,7 @@ export function registerSkillCommands(
                 }
             }
 
-            vscode.window.showInformationMessage('저장소 설정이 완료되었습니다.');
+            vscode.window.showInformationMessage('Repository setup complete.');
             await vscode.commands.executeCommand('skillInventory.refresh');
         })
     );

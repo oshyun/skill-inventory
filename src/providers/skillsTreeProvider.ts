@@ -36,10 +36,10 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
         const syncEnabled = syncConfig.get<boolean>('enabled', true);
         const interval = syncConfig.get<number>('intervalSeconds', 30);
         const syncNote = syncEnabled
-            ? `\n이 버튼을 누르지 않아도 ${interval}초마다 자동 동기화됩니다.`
-            : '\n자동 동기화가 꺼져 있습니다. 설정에서 켤 수 있습니다.';
+            ? `\nAuto-sync is on — updates every ${interval}s.`
+            : '\nAuto-sync is off. You can enable it in settings.';
         if (this.treeView) {
-            this.treeView.message = `${sourceLabel} 에서 스킬을 불러오는 중...${syncNote}`;
+            this.treeView.message = `Loading skills from ${sourceLabel}...${syncNote}`;
         }
         this._onDidChangeTreeData.fire();
 
@@ -52,8 +52,8 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
                         this.skills = [];
                         showMessageWithAction(
                             'error',
-                            'GitHub 저장소가 설정되지 않았습니다. 저장소 URL을 설정해주세요.',
-                            '저장소 설정',
+                            'No repository configured. Please set a repository URL.',
+                            'Setup Repository',
                             'skillInventory.setupRepository'
                         );
                     } else {
