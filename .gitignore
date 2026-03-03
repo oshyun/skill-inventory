@@ -5,3 +5,4 @@ node_modules
 *.vsix
 .github/skills/
 .claude/skills/
+package-lock.json
