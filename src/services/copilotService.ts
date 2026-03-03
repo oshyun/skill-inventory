@@ -120,9 +120,10 @@ export class CopilotService {
 					`${staleNames.length} skill(s) not found in remote will be deleted: ${staleNames.join(', ')}`,
 					{
 						modal: true,
-						detail: 'To stop seeing this prompt, disable "Remove Stale Skills" in settings.',
+						detail: 'Skipping deletion will not affect the rest of the sync.\nTo stop seeing this prompt, disable "Remove Stale Skills" in settings.',
 					},
 					'Delete',
+					'Skip',
 					'Open Settings'
 				);
 				if (answer === 'Delete') {
