@@ -22,6 +22,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
 
     setTreeView(treeView: vscode.TreeView<TreeNode>): void {
         this.treeView = treeView;
+        treeView.message = this.getSourceLabel() || undefined;
     }
 
     public async refresh(forceSync = false): Promise<void> {
@@ -32,9 +33,6 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
         this.isLoading = true;
         vscode.commands.executeCommand('setContext', 'skillInventory.isLoading', true);
 
-        if (this.treeView) {
-            this.treeView.message = this.getSourceLabel();
-        }
         this._onDidChangeTreeData.fire();
 
         try {
@@ -78,7 +76,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
             this.isLoading = false;
             vscode.commands.executeCommand('setContext', 'skillInventory.isLoading', false);
             if (this.treeView) {
-                this.treeView.message = undefined;
+                this.treeView.message = this.getSourceLabel() || undefined;
             }
             this.keepLocalSkillsCache = CopilotService.getKeepLocalSkills();
             this._onDidChangeTreeData.fire();
