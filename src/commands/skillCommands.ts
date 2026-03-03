@@ -155,6 +155,25 @@ export function registerSkillCommands(
                 vscode.ConfigurationTarget.Global
             );
 
+            // Offer to enable chat.useAgentSkills if currently disabled
+            const agentSkillsEnabled = vscode.workspace
+                .getConfiguration('chat')
+                .get<boolean>('useAgentSkills', false);
+            if (!agentSkillsEnabled) {
+                const enable = await vscode.window.showInformationMessage(
+                    'Chat: Agent Skills Locations 옵션이 꺼져 있습니다. 활성화하면 AI 에이전트가 동기화된 스킬을 인식할 수 있습니다. 지금 켤까요?',
+                    { modal: true },
+                    '활성화'
+                );
+                if (enable === '활성화') {
+                    await vscode.workspace.getConfiguration('chat').update(
+                        'useAgentSkills',
+                        true,
+                        vscode.ConfigurationTarget.Global
+                    );
+                }
+            }
+
             vscode.window.showInformationMessage('저장소 설정이 완료되었습니다.');
             await vscode.commands.executeCommand('skillInventory.refresh');
         })
