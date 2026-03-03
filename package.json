@@ -2,7 +2,7 @@
   "name": "skill-inventory",
   "displayName": "Skill Inventory",
   "description": "Manage and sync skills from a GitHub repository",
-  "version": "0.0.3",
+  "version": "0.0.0",
   "publisher": "oshyun",
   "engines": {
     "vscode": "^1.85.0"
@@ -169,7 +169,7 @@
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test",
-    "package": "npm version patch --no-git-tag-version && npx vsce package --allow-missing-repository"
+    "package": "node scripts/bump-version.js && npx vsce package --allow-missing-repository && git checkout -- package.json"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
