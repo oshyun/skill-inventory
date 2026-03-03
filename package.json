@@ -92,75 +92,105 @@
         }
       ]
     },
-    "configuration": {
-      "title": "Skill Inventory",
-      "properties": {
-        "skillInventory.github.repoUrl": {
-          "type": "string",
-          "default": "",
-          "description": "GitHub 저장소 URL (예: https://github.com/org/repo 또는 https://github.example.com/org/repo)"
-        },
-        "skillInventory.github.pat": {
-          "type": "string",
-          "default": "",
-          "description": "GitHub Personal Access Token (PAT). 선택사항. 비공개 저장소 접속 시 필요합니다."
-        },
-        "skillInventory.github.branch": {
-          "type": "string",
-          "default": "master",
-          "description": "GitHub 브랜치 이름"
-        },
-        "skillInventory.github.skillsPath": {
-          "type": "string",
-          "default": "/skills",
-          "description": "저장소 내 스킬 디렉토리 경로 (루트는 /)"
-        },
-        "skillInventory.sync.enabled": {
-          "type": "boolean",
-          "default": true,
-          "markdownDescription": "스킬 자동 동기화 활성화 여부"
-        },
-        "skillInventory.sync.intervalSeconds": {
-          "type": "number",
-          "default": 30,
-          "minimum": 30,
-          "markdownDescription": "원격 저장소 변경 감지 주기(초). 변경이 감지되면 모든 활성화된 동기화 대상에 반영됩니다. on/off는 `sync.enabled`로 제어합니다."
-        },
-        "skillInventory.sync.removeStaleSkills": {
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "동기화 시 원격 저장소에 없는 스킬을 로컬에서 삭제. 비활성화하면 원격에서 삭제된 스킬이 로컬 동기화 대상 폴더에 계속 남아있습니다."
-        },
-        "skillInventory.sync.targets.githubSkills": {
-          "type": "boolean",
-          "default": true,
-          "markdownDescription": "워크스페이스 `.github/skills/`에 동기화. **GitHub Copilot**이 이 경로의 스킬을 자동 인식합니다. 현재 프로젝트에만 적용됩니다."
-        },
-        "skillInventory.sync.targets.claudeSkills": {
-          "type": "boolean",
-          "default": true,
-          "markdownDescription": "워크스페이스 `.claude/skills/`에 동기화. **Claude Code**가 프로젝트 컨텍스트에서 이 경로의 스킬을 참조합니다. 현재 프로젝트에만 적용됩니다."
-        },
-        "skillInventory.sync.targets.githubSkillsGlobal": {
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "홈 디렉토리 `~/.github/skills/`에 동기화. **GitHub Copilot**이 모든 프로젝트에서 전역으로 이 스킬을 참조합니다. 모든 워크스페이스에 영향을 줍니다."
-        },
-        "skillInventory.sync.targets.claudeSkillsGlobal": {
-          "type": "boolean",
-          "default": false,
-          "markdownDescription": "홈 디렉토리 `~/.claude/skills/`에 동기화. **Claude Code**가 모든 프로젝트에서 전역으로 이 스킬을 참조합니다. 모든 워크스페이스에 영향을 줍니다."
-        },
-        "skillInventory.sync.targets.custom": {
-          "type": "array",
-          "items": {
-            "type": "string"
+    "configuration": [
+      {
+        "id": "github",
+        "title": "GitHub 연결",
+        "order": 1,
+        "properties": {
+          "skillInventory.github.repoUrl": {
+            "order": 1,
+            "type": "string",
+            "default": "",
+            "description": "스킬을 가져올 GitHub 저장소 URL (예: https://github.com/org/repo)"
           },
-          "default": [],
-          "markdownDescription": "추가 동기화 경로 목록. 상대 경로는 워크스페이스 기준, `~`로 시작하면 홈 디렉토리 기준으로 해석됩니다.\n\n예시: `~/.config/my-tool/skills`, `.vs/skills`"
+          "skillInventory.github.pat": {
+            "order": 2,
+            "type": "string",
+            "default": "",
+            "description": "GitHub Personal Access Token (PAT). 비공개 저장소 접속 시 필요합니다."
+          },
+          "skillInventory.github.branch": {
+            "order": 3,
+            "type": "string",
+            "default": "master",
+            "description": "읽어올 브랜치 이름"
+          },
+          "skillInventory.github.skillsPath": {
+            "order": 4,
+            "type": "string",
+            "default": "/skills",
+            "description": "저장소 내 스킬 루트 경로 (저장소 전체를 사용하려면 /)"
+          }
+        }
+      },
+      {
+        "id": "sync",
+        "title": "동기화",
+        "order": 2,
+        "properties": {
+          "skillInventory.sync.enabled": {
+            "order": 1,
+            "type": "boolean",
+            "default": true,
+            "description": "원격 저장소 변경을 주기적으로 감지하여 자동 동기화"
+          },
+          "skillInventory.sync.intervalSeconds": {
+            "order": 2,
+            "type": "number",
+            "default": 30,
+            "minimum": 30,
+            "markdownDescription": "변경 감지 주기(초). `sync.enabled`가 켜져 있을 때만 동작합니다."
+          },
+          "skillInventory.sync.removeStaleSkills": {
+            "order": 3,
+            "type": "boolean",
+            "default": false,
+            "description": "원격에서 삭제된 스킬을 로컬 동기화 대상에서도 삭제. 꺼두면 원격 삭제 스킬이 로컬에 그대로 남습니다."
+          }
+        }
+      },
+      {
+        "id": "syncTargets",
+        "title": "동기화 대상",
+        "order": 3,
+        "properties": {
+          "skillInventory.sync.targets.githubSkills": {
+            "order": 1,
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[프로젝트]** `.github/skills/` — GitHub Copilot이 현재 프로젝트에서 스킬을 인식합니다."
+          },
+          "skillInventory.sync.targets.claudeSkills": {
+            "order": 2,
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "**[프로젝트]** `.claude/skills/` — Claude Code가 현재 프로젝트에서 스킬을 참조합니다."
+          },
+          "skillInventory.sync.targets.githubSkillsGlobal": {
+            "order": 3,
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[전역]** `~/.github/skills/` — GitHub Copilot이 모든 프로젝트에서 스킬을 인식합니다."
+          },
+          "skillInventory.sync.targets.claudeSkillsGlobal": {
+            "order": 4,
+            "type": "boolean",
+            "default": false,
+            "markdownDescription": "**[전역]** `~/.claude/skills/` — Claude Code가 모든 프로젝트에서 스킬을 참조합니다."
+          },
+          "skillInventory.sync.targets.custom": {
+            "order": 5,
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": [],
+            "markdownDescription": "추가 동기화 경로. 상대 경로는 워크스페이스 기준, `~/`로 시작하면 홈 디렉토리 기준입니다.\n\n예: `~/.config/my-tool/skills`, `.vs/skills`"
+          }
         }
       }
-    }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
