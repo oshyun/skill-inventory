@@ -36,6 +36,11 @@
     "viewsWelcome": [
       {
         "view": "skillInventoryView",
+        "contents": "Loading...",
+        "when": "!skillInventory.isReady"
+      },
+      {
+        "view": "skillInventoryView",
         "contents": "No repository configured.\n\n[Setup Repository](command:skillInventory.setupRepository)",
         "when": "skillInventory.isReady && !skillInventory.isLoading"
       }
