@@ -50,8 +50,13 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
                         this.tree = [];
                         this.skills = [];
                         vscode.window.showErrorMessage(
-                            'GitHub 저장소가 설정되지 않았습니다. 저장소 URL을 설정해주세요.'
-                        );
+                            'GitHub 저장소가 설정되지 않았습니다. 저장소 URL을 설정해주세요.',
+                            '저장소 설정'
+                        ).then(selection => {
+                            if (selection === '저장소 설정') {
+                                vscode.commands.executeCommand('skillInventory.setupRepository');
+                            }
+                        });
                     } else {
                         const result = await this.githubService.fetchTree();
                         this.tree = result.tree;
