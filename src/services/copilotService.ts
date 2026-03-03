@@ -15,6 +15,8 @@ export class CopilotService {
 			'~/.claude/skills': true,
 			'.github/skills': false,
 			'~/.github/skills': false,
+			'.agents/skills': false,
+			'~/.agents/skills': false,
 		});
 		return Object.entries(targets)
 			.filter(([, enabled]) => enabled)
