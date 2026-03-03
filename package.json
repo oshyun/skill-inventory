@@ -70,6 +70,11 @@
         "category": "Skill Inventory"
       },
       {
+        "command": "skillInventory.changePat",
+        "title": "Change Personal Access Token (PAT)",
+        "category": "Skill Inventory"
+      },
+      {
         "command": "skillInventory.ignoreSkill",
         "title": "Protect Local (Ignore Remote Updates)",
         "category": "Skill Inventory"
@@ -121,13 +126,13 @@
           "skillInventory.source.branch": {
             "order": 3,
             "type": "string",
-            "default": "master",
+            "default": "main",
             "description": "Branch name to read skills from"
           },
           "skillInventory.source.skillsPath": {
             "order": 4,
             "type": "string",
-            "default": "/skills",
+            "default": "skills",
             "markdownDescription": "Path within the repository where skill folders are located. Each subfolder containing a `SKILL.md` is treated as one skill.\n\n**The sync target paths (e.g. `.claude/skills`) map directly to this path** — files are mirrored 1:1. For example, `.claude/skills/my-skill/SKILL.md` corresponds to `<skillsPath>/my-skill/SKILL.md` in the repository.\n\nUse `/` to treat the entire repository root as the skills path."
           }
         }

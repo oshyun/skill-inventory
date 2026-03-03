@@ -43,12 +43,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
                     if (!this.githubService.isConfigured()) {
                         this.tree = [];
                         this.skills = [];
-                        showMessageWithAction(
-                            'error',
-                            'No repository configured. Please set a repository URL.',
-                            'Setup Repository',
-                            'skillInventory.setupRepository'
-                        );
+                        // Welcome view already shows "Setup Repository" — no popup needed
                     } else {
                         const result = await this.githubService.fetchTree();
                         this.tree = result.tree;
@@ -63,10 +58,9 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
             if (isAuthError) {
                 showMessageWithAction(
                     'error',
-                    'GitHub 인증 실패: PAT(Personal Access Token) 설정이 필요합니다.',
-                    'PAT 설정',
-                    'workbench.action.openSettings',
-                    'skillInventory.source.pat'
+                    'GitHub 인증 실패: PAT(Personal Access Token)가 잘못되었거나 만료되었습니다.',
+                    'PAT 변경',
+                    'skillInventory.changePat'
                 );
             } else {
                 vscode.window.showErrorMessage(`Failed to fetch skills: ${message}`);

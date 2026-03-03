@@ -90,7 +90,7 @@ export class GitHubService {
 
             if (settingsRepoUrl) {
                 const { baseUrl, owner, repo } = this.parseRepoUrl(settingsRepoUrl);
-                const branch = vsConfig.get<string>('branch', 'main');
+                const branch = vsConfig.get<string>('branch', 'main') || 'main';
                 const skillsPathRaw = vsConfig.get<string>('skillsPath', 'skills');
 
                 this.config = {

@@ -64,12 +64,12 @@ export function registerSkillCommands(
         })
     );
 
-    // Setup repository command — guided InputBox workflow
+    // Setup repository command — guided InputBox workflow (7 steps)
     context.subscriptions.push(
         vscode.commands.registerCommand('skillInventory.setupRepository', async () => {
             // Step 1: Repository URL (required)
             const repoUrl = await vscode.window.showInputBox({
-                title: 'Setup Repository (1/5)',
+                title: 'Setup Repository (1/7)',
                 prompt: 'Enter the GitHub repository URL',
                 placeHolder: 'https://github.com/org/repo',
                 ignoreFocusOut: true,
@@ -88,9 +88,9 @@ export function registerSkillCommands(
                 return; // User cancelled
             }
 
-            // Step 2: PAT (optional)
+            // Step 2: PAT (optional, stored in SecretStorage — never written to settings.json)
             const pat = await vscode.window.showInputBox({
-                title: 'Setup Repository (2/5)',
+                title: 'Setup Repository (2/7)',
                 prompt: 'Enter your Personal Access Token (PAT)',
                 placeHolder: 'Required for private repositories. Leave blank for public.',
                 password: true,
@@ -101,7 +101,45 @@ export function registerSkillCommands(
                 return; // User cancelled
             }
 
-            // Step 3: Sync target paths
+            // Step 3: Branch
+            const currentBranch = vscode.workspace
+                .getConfiguration('skillInventory.source')
+                .get<string>('branch', 'main');
+            const branch = await vscode.window.showInputBox({
+                title: 'Setup Repository (3/7)',
+                prompt: 'Enter the branch name to read skills from',
+                placeHolder: 'main',
+                value: currentBranch,
+                ignoreFocusOut: true,
+                validateInput: (value) => {
+                    if (!value.trim()) {
+                        return 'Branch name is required.';
+                    }
+                    return undefined;
+                },
+            });
+
+            if (branch === undefined) {
+                return; // User cancelled
+            }
+
+            // Step 4: Skills path
+            const currentSkillsPath = vscode.workspace
+                .getConfiguration('skillInventory.source')
+                .get<string>('skillsPath', 'skills');
+            const skillsPath = await vscode.window.showInputBox({
+                title: 'Setup Repository (4/7)',
+                prompt: 'Path in the repository where skill folders are located. Use / for repo root.',
+                placeHolder: 'skills',
+                value: currentSkillsPath,
+                ignoreFocusOut: true,
+            });
+
+            if (skillsPath === undefined) {
+                return; // User cancelled
+            }
+
+            // Step 5: Sync target paths
             const TARGET_PATHS: { label: string; picked: boolean }[] = [
                 { label: '.agents/skills',  picked: false },
                 { label: '.claude/skills',  picked: true  },
@@ -112,7 +150,7 @@ export function registerSkillCommands(
             ];
 
             const selectedPaths = await vscode.window.showQuickPick(TARGET_PATHS, {
-                title: 'Setup Repository (3/5)',
+                title: 'Setup Repository (5/7)',
                 placeHolder: 'Select sync target paths',
                 canPickMany: true,
                 ignoreFocusOut: true,
@@ -122,7 +160,7 @@ export function registerSkillCommands(
                 return; // User cancelled
             }
 
-            // Step 4: Remove stale skills option
+            // Step 6: Remove stale skills option
             const staleAnswer = await vscode.window.showWarningMessage(
                 'Automatically delete local skills that are removed from the remote repository?',
                 {
@@ -137,7 +175,7 @@ export function registerSkillCommands(
                 return; // User cancelled
             }
 
-            // Step 5: Auto sync
+            // Step 7: Auto sync
             const autoSyncAnswer = await vscode.window.showInformationMessage(
                 'Enable auto-sync?',
                 {
@@ -152,12 +190,17 @@ export function registerSkillCommands(
                 return; // User cancelled
             }
 
-            // Save to global settings
-            const config = vscode.workspace.getConfiguration('skillInventory.source');
-            await config.update('repoUrl', repoUrl.trim(), vscode.ConfigurationTarget.Global);
+            // Save PAT first so it is available when subsequent config updates trigger a refresh
             if (pat) {
                 await context.secrets.store('skillInventory.pat', pat.trim());
             }
+
+            // Save source settings (each triggers onDidChangeConfiguration → refresh)
+            const sourceConfig = vscode.workspace.getConfiguration('skillInventory.source');
+            await sourceConfig.update('repoUrl', repoUrl.trim(), vscode.ConfigurationTarget.Global);
+            await sourceConfig.update('branch', branch.trim() || 'main', vscode.ConfigurationTarget.Global);
+            await sourceConfig.update('skillsPath', skillsPath.trim(), vscode.ConfigurationTarget.Global);
+
             const targetConfig: Record<string, boolean> = {};
             for (const { label } of TARGET_PATHS) {
                 targetConfig[label] = selectedPaths.some(p => p.label === label);
@@ -199,6 +242,32 @@ export function registerSkillCommands(
 
             vscode.window.showInformationMessage('Repository setup complete.');
             await skillsTreeProvider.refresh(true);
+        })
+    );
+
+    // Change PAT command — update PAT only without re-running full setup
+    context.subscriptions.push(
+        vscode.commands.registerCommand('skillInventory.changePat', async () => {
+            const pat = await vscode.window.showInputBox({
+                title: 'Change Personal Access Token (PAT)',
+                prompt: 'Enter your new Personal Access Token',
+                placeHolder: 'Leave blank to remove the PAT (public repositories only)',
+                password: true,
+                ignoreFocusOut: true,
+            });
+
+            if (pat === undefined) {
+                return; // User cancelled
+            }
+
+            if (pat.trim()) {
+                await context.secrets.store('skillInventory.pat', pat.trim());
+            } else {
+                await context.secrets.delete('skillInventory.pat');
+            }
+
+            vscode.window.showInformationMessage('PAT updated. Refreshing skills...');
+            await skillsTreeProvider.refresh();
         })
     );
 
