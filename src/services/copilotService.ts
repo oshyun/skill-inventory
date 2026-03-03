@@ -10,19 +10,13 @@ export class CopilotService {
 	 * Returns array of enabled sync target paths.
 	 */
 	static getSyncTargets(): string[] {
-		const config = vscode.workspace.getConfiguration('skillInventory.sync.targets');
-		const enabled = config.get<string[]>('enabled', ['.github/skills', '.claude/skills', '~/.github/skills', '~/.claude/skills']);
-		const paths = [...enabled];
-
-		const custom = config.get<string[]>('custom', []);
-		for (const p of custom) {
-			const trimmed = p.trim();
-			if (trimmed && !paths.includes(trimmed)) {
-				paths.push(trimmed);
-			}
-		}
-
-		return paths;
+		const targets = vscode.workspace.getConfiguration('skillInventory.sync').get<Record<string, boolean>>('targets', {
+			'.claude/skills': true,
+			'~/.claude/skills': true,
+		});
+		return Object.entries(targets)
+			.filter(([, enabled]) => enabled)
+			.map(([path]) => path);
 	}
 
 	/**

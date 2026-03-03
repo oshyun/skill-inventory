@@ -155,40 +155,17 @@
         "title": "동기화 대상",
         "order": 3,
         "properties": {
-          "skillInventory.sync.targets.enabled": {
+          "skillInventory.sync.targets": {
             "order": 1,
-            "type": "array",
-            "items": {
-              "type": "string",
-              "enum": [
-                ".github/skills",
-                ".claude/skills",
-                "~/.github/skills",
-                "~/.claude/skills"
-              ],
-              "enumDescriptions": [
-                "[프로젝트] 현재 워크스페이스",
-                "[프로젝트] 현재 워크스페이스",
-                "[전역] 홈 디렉토리",
-                "[전역] 홈 디렉토리"
-              ]
+            "type": "object",
+            "additionalProperties": {
+              "type": "boolean"
             },
-            "default": [
-              ".github/skills",
-              ".claude/skills",
-              "~/.github/skills",
-              "~/.claude/skills"
-            ],
-            "description": "동기화할 대상 경로 목록"
-          },
-          "skillInventory.sync.targets.custom": {
-            "order": 5,
-            "type": "array",
-            "items": {
-              "type": "string"
+            "default": {
+              ".claude/skills": true,
+              "~/.claude/skills": true
             },
-            "default": [],
-            "markdownDescription": "추가 동기화 경로. 상대 경로는 워크스페이스 기준, `~/`로 시작하면 홈 디렉토리 기준입니다.\n\n예: `~/.config/my-tool/skills`, `.vs/skills`"
+            "markdownDescription": "동기화 대상 경로 목록. 경로를 키로, 활성화 여부를 값으로 지정합니다. 상대 경로는 워크스페이스 기준, `~/`로 시작하면 홈 디렉토리 기준입니다.\n\n예: `{\".claude/skills\": true, \"~/.config/my-tool/skills\": true}`"
           }
         }
       }

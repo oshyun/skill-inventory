@@ -111,10 +111,16 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Warn if chat.useAgentSkills is not enabled
 	checkAgentSkillsConfig();
+	// Warn if .claude/skills is missing from chat.agentSkillsLocations
+	checkAgentSkillsLocations();
 	context.subscriptions.push(
 		vscode.workspace.onDidChangeConfiguration((e) => {
 			if (e.affectsConfiguration('chat.useAgentSkills')) {
 				checkAgentSkillsConfig();
+			}
+			if (e.affectsConfiguration('chat.agentSkillsLocations') ||
+				e.affectsConfiguration('skillInventory.sync.targets.enabled')) {
+				checkAgentSkillsLocations();
 			}
 		})
 	);
@@ -185,6 +191,25 @@ function checkAgentSkillsConfig(): void {
 		).then(selection => {
 			if (selection === '설정 열기') {
 				vscode.commands.executeCommand('workbench.action.openSettings', 'chat.useAgentSkills');
+			}
+		});
+	}
+}
+
+function checkAgentSkillsLocations(): void {
+	const locations = vscode.workspace.getConfiguration('chat').get<Record<string, boolean>>('agentSkillsLocations');
+	if (!locations) {
+		return;
+	}
+
+	const hasClaudeSkills = Object.keys(locations).some(loc => loc.includes('.claude/skills'));
+	if (!hasClaudeSkills) {
+		vscode.window.showWarningMessage(
+			'Skill Inventory: chat.agentSkillsLocations에 .claude/skills 경로가 없습니다. Claude Code가 스킬을 인식하지 못할 수 있으니 경로를 점검해 주세요.',
+			'설정 열기'
+		).then(selection => {
+			if (selection === '설정 열기') {
+				vscode.commands.executeCommand('workbench.action.openSettings', 'chat.agentSkillsLocations');
 			}
 		});
 	}
