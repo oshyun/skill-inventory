@@ -69,7 +69,7 @@ export function registerSkillCommands(
         vscode.commands.registerCommand('skillInventory.setupRepository', async () => {
             // Step 1: Repository URL (required)
             const repoUrl = await vscode.window.showInputBox({
-                title: 'Setup Repository (1/4)',
+                title: 'Setup Repository (1/5)',
                 prompt: 'Enter the GitHub repository URL',
                 placeHolder: 'https://github.com/org/repo',
                 ignoreFocusOut: true,
@@ -90,7 +90,7 @@ export function registerSkillCommands(
 
             // Step 2: PAT (optional)
             const pat = await vscode.window.showInputBox({
-                title: 'Setup Repository (2/4)',
+                title: 'Setup Repository (2/5)',
                 prompt: 'Enter your Personal Access Token (PAT)',
                 placeHolder: 'Required for private repositories. Leave blank for public.',
                 password: true,
@@ -112,7 +112,7 @@ export function registerSkillCommands(
             ];
 
             const selectedPaths = await vscode.window.showQuickPick(TARGET_PATHS, {
-                title: 'Setup Repository (3/4)',
+                title: 'Setup Repository (3/5)',
                 placeHolder: 'Select sync target paths',
                 canPickMany: true,
                 ignoreFocusOut: true,
@@ -137,12 +137,28 @@ export function registerSkillCommands(
                 return; // User cancelled
             }
 
-            // Save to global settings
+            // Step 5: Auto sync
+            const autoSyncAnswer = await vscode.window.showInformationMessage(
+                'Enable auto-sync?',
+                {
+                    modal: true,
+                    detail: 'When enabled, the extension periodically checks the remote for changes and syncs automatically.\n\nYou can adjust the interval in settings (default: 30s).',
+                },
+                'Enable (recommended)',
+                'Disable'
+            );
+
+            if (autoSyncAnswer === undefined) {
+                return; // User cancelled
+            }
+
+            // Save to global settings — PAT saved before repoUrl to prevent auth failure
+            // on the onDidChangeConfiguration refresh triggered by repoUrl save
             const config = vscode.workspace.getConfiguration('skillInventory.source');
-            await config.update('repoUrl', repoUrl.trim(), vscode.ConfigurationTarget.Global);
             if (pat) {
                 await config.update('pat', pat.trim(), vscode.ConfigurationTarget.Global);
             }
+            await config.update('repoUrl', repoUrl.trim(), vscode.ConfigurationTarget.Global);
             const targetConfig: Record<string, boolean> = {};
             for (const { label } of TARGET_PATHS) {
                 targetConfig[label] = selectedPaths.some(p => p.label === label);
@@ -155,6 +171,11 @@ export function registerSkillCommands(
             await vscode.workspace.getConfiguration('skillInventory.sync').update(
                 'removeStaleSkills',
                 staleAnswer === 'Enable (recommended)',
+                vscode.ConfigurationTarget.Global
+            );
+            await vscode.workspace.getConfiguration('skillInventory.sync').update(
+                'autoSync',
+                autoSyncAnswer === 'Enable (recommended)',
                 vscode.ConfigurationTarget.Global
             );
 
