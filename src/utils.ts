@@ -1,4 +1,14 @@
 import * as vscode from 'vscode';
+import * as os from 'os';
+
+export const PAT_SECRET_KEY = 'skillInventory.pat';
+
+export function expandTilde(p: string): string {
+	if (p.startsWith('~/') || p === '~') {
+		return p.replace(/^~/, os.homedir());
+	}
+	return p;
+}
 
 export function getErrorMessage(error: unknown): string {
 	return error instanceof Error ? error.message : 'Unknown error';
