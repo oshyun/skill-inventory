@@ -25,7 +25,7 @@ Fetch skills from a GitHub repository and automatically sync them to local paths
 | ---------------------------------- | ------------------------------------------------------ |
 | `skillInventory.source.repoUrl`    | GitHub (or GitHub Enterprise) repository URL           |
 | `skillInventory.source.branch`     | Branch to read from (default: `master`)                |
-| `skillInventory.source.skillsPath` | Skills root path inside the repo (default: `skills`)   |
+| `skillInventory.source.skillsPath` | Skills root path inside the repo, from repo root (default: `/skills`) |
 
 > **PAT (Personal Access Token):** Stored securely in VS Code's built-in SecretStorage — never written to `settings.json`. Set or update it via **Skill Inventory: Change PAT** or the setup wizard.
 

@@ -132,8 +132,8 @@
           "skillInventory.source.skillsPath": {
             "order": 4,
             "type": "string",
-            "default": "skills",
-            "markdownDescription": "Path within the repository where skill folders are located. Each subfolder containing a `SKILL.md` is treated as one skill.\n\n**The sync target paths (e.g. `.claude/skills`) map directly to this path** — files are mirrored 1:1. For example, `.claude/skills/my-skill/SKILL.md` corresponds to `<skillsPath>/my-skill/SKILL.md` in the repository.\n\nUse `/` to treat the entire repository root as the skills path."
+            "default": "/skills",
+            "markdownDescription": "Path within the repository where skill folders are located, starting from the repo root with a leading `/`. Each subfolder containing a `SKILL.md` is treated as one skill.\n\n**The sync target paths (e.g. `.claude/skills`) map directly to this path** — files are mirrored 1:1. For example, `.claude/skills/my-skill/SKILL.md` corresponds to `<skillsPath>/my-skill/SKILL.md` in the repository.\n\nUse `/` to treat the entire repository root as the skills path."
           }
         }
       },

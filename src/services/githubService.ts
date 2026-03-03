@@ -91,14 +91,14 @@ export class GitHubService {
             if (settingsRepoUrl) {
                 const { baseUrl, owner, repo } = this.parseRepoUrl(settingsRepoUrl);
                 const branch = vsConfig.get<string>('branch', 'main') || 'master';
-                const skillsPathRaw = vsConfig.get<string>('skillsPath', 'skills');
+                const skillsPathRaw = vsConfig.get<string>('skillsPath', '/skills');
 
                 this.config = {
                     baseUrl,
                     owner,
                     repo,
                     branch,
-                    skillsPath: skillsPathRaw === '/' ? '' : skillsPathRaw,
+                    skillsPath: skillsPathRaw.replace(/^\//, ''),
                     pat: '',
                 };
                 this.configFromSettings = true;
@@ -157,7 +157,7 @@ export class GitHubService {
                 owner,
                 repo,
                 branch: env['branch'] || 'master',
-                skillsPath: env['skills_path'] === '/' ? '' : (env['skills_path'] || 'skills'),
+                skillsPath: (env['skills_path'] || '/skills').replace(/^\//, ''),
                 pat: token,
             };
             this.configFromSettings = false;
