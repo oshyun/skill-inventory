@@ -215,6 +215,19 @@ export class GitHubService {
         const whitelist = sourceConfig.get<string[]>('skillWhitelist', []);
         const blacklist = sourceConfig.get<string[]>('skillBlacklist', []);
 
+        // Abort if whitelist and blacklist conflict
+        const conflicts = whitelist.filter(s => blacklist.includes(s));
+        if (conflicts.length > 0) {
+            const answer = await vscode.window.showErrorMessage(
+                `Whitelist/Blacklist conflict: ${conflicts.join(', ')}. Remove these from one of the lists to continue.`,
+                'Open Settings'
+            );
+            if (answer === 'Open Settings') {
+                vscode.commands.executeCommand('workbench.action.openSettings', 'skillInventory.source.skillWhitelist');
+            }
+            return { tree: [], skills: [] };
+        }
+
         const walk = async (dirPath: string, relativeBase: string): Promise<TreeNode[]> => {
             const response = await octokit.repos.getContent({
                 owner: this.config!.owner,
@@ -248,7 +261,7 @@ export class GitHubService {
                     if ('content' in fileContent.data && typeof fileContent.data.content === 'string') {
                         // Apply whitelist/blacklist filter
                         const passesWhitelist = whitelist.length === 0 || whitelist.includes(item.name);
-                        const passesBlacklist = whitelist.length > 0 || !blacklist.includes(item.name);
+                        const passesBlacklist = !blacklist.includes(item.name);
                         if (!passesWhitelist || !passesBlacklist) {
                             continue;
                         }
