@@ -112,7 +112,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
             const item = new vscode.TreeItem(skill.name, vscode.TreeItemCollapsibleState.Collapsed);
             item.tooltip = skill.description || skill.name;
             item.description = ignored ? '(ignored)' : (skill.tags?.join(', ') || '');
-            item.iconPath = new vscode.ThemeIcon(ignored ? 'circle-slash' : 'symbol-method');
+            item.iconPath = new vscode.ThemeIcon(ignored ? 'lock' : 'symbol-method');
             item.contextValue = ignored ? 'skill-ignored' : 'skill';
             return item;
         }

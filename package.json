@@ -66,12 +66,12 @@
       },
       {
         "command": "skillInventory.ignoreSkill",
-        "title": "Ignore Skill",
+        "title": "Protect Local (Ignore Remote Updates)",
         "category": "Skill Inventory"
       },
       {
         "command": "skillInventory.unignoreSkill",
-        "title": "Unignore Skill",
+        "title": "Unprotect Local (Resume Remote Sync)",
         "category": "Skill Inventory"
       }
     ],
@@ -89,7 +89,6 @@
         }
       ],
       "view/item/context": [
-        {
         {
           "command": "skillInventory.ignoreSkill",
           "when": "view == skillInventoryView && viewItem == skill",
@@ -131,6 +130,20 @@
             "type": "string",
             "default": "/skills",
             "markdownDescription": "Path within the repository where skill folders are located. Each subfolder containing a `SKILL.md` is treated as one skill.\n\n**The sync target paths (e.g. `.claude/skills`) map directly to this path** — files are mirrored 1:1. For example, `.claude/skills/my-skill/SKILL.md` corresponds to `<skillsPath>/my-skill/SKILL.md` in the repository.\n\nUse `/` to treat the entire repository root as the skills path."
+          },
+          "skillInventory.source.skillWhitelist": {
+            "order": 5,
+            "type": "array",
+            "items": { "type": "string" },
+            "default": [],
+            "description": "Only fetch these skills from the remote. When non-empty, all other skills are ignored. Use the skill folder name only — e.g. 'my-skill'."
+          },
+          "skillInventory.source.skillBlacklist": {
+            "order": 6,
+            "type": "array",
+            "items": { "type": "string" },
+            "default": [],
+            "description": "Skills to exclude from fetching. These skills will not appear in the tree or be synced locally. Use the skill folder name only — e.g. 'my-skill'. Has no effect if skillWhitelist is set."
           }
         }
       },
@@ -163,7 +176,7 @@
             "type": "array",
             "items": { "type": "string" },
             "default": [],
-            "description": "Skills excluded from sync. These skills will not be updated or deleted locally. Use the skill folder name only — e.g. for '/skills/my-skill', enter 'my-skill'. Right-click a skill in the tree view to ignore or unignore it."
+            "description": "Skills whose local files are protected from remote sync. The skill is still fetched and shown in the tree, but local files will not be overwritten or deleted. Use the skill folder name only — e.g. 'my-skill'. Right-click a skill in the tree view to protect or unprotect it."
           }
         }
       },

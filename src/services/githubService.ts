@@ -211,6 +211,10 @@ export class GitHubService {
         const octokit = this.ensureAuthenticated();
         const allSkills: Skill[] = [];
 
+        const sourceConfig = vscode.workspace.getConfiguration('skillInventory.source');
+        const whitelist = sourceConfig.get<string[]>('skillWhitelist', []);
+        const blacklist = sourceConfig.get<string[]>('skillBlacklist', []);
+
         const walk = async (dirPath: string, relativeBase: string): Promise<TreeNode[]> => {
             const response = await octokit.repos.getContent({
                 owner: this.config!.owner,
@@ -242,6 +246,13 @@ export class GitHubService {
                     });
 
                     if ('content' in fileContent.data && typeof fileContent.data.content === 'string') {
+                        // Apply whitelist/blacklist filter
+                        const passesWhitelist = whitelist.length === 0 || whitelist.includes(item.name);
+                        const passesBlacklist = whitelist.length > 0 || !blacklist.includes(item.name);
+                        if (!passesWhitelist || !passesBlacklist) {
+                            continue;
+                        }
+
                         const content = Buffer.from(fileContent.data.content, 'base64').toString('utf-8');
                         const skill = markdownToSkill(content, skillMdPath, fileContent.data.sha);
                         skill.rawContent = content;
