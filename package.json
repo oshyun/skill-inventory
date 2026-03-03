@@ -1,7 +1,7 @@
 {
   "name": "skill-inventory",
   "displayName": "Skill Inventory",
-  "description": "Sync AI agent skills from a Git repository to local workspaces. Manage, browse, and auto-sync skill definitions for any AI coding assistant.",
+  "description": "Sync AI agent skills from a Git repository to local workspaces.",
   "version": "0.0.0",
   "publisher": "oshyun",
   "keywords": [
