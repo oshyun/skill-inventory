@@ -251,7 +251,7 @@ export function registerSkillCommands(
             const pat = await vscode.window.showInputBox({
                 title: 'Change Personal Access Token (PAT)',
                 prompt: 'Enter your new Personal Access Token',
-                placeHolder: 'Leave blank to remove the PAT (public repositories only)',
+                placeHolder: 'Leave blank to remove the Personal Access Token (public repositories only)',
                 password: true,
                 ignoreFocusOut: true,
             });
@@ -266,7 +266,7 @@ export function registerSkillCommands(
                 await context.secrets.delete('skillInventory.pat');
             }
 
-            vscode.window.showInformationMessage('PAT updated. Refreshing skills...');
+            vscode.window.showInformationMessage('Personal Access Token updated. Refreshing skills...');
             await skillsTreeProvider.refresh();
         })
     );

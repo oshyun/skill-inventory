@@ -71,7 +71,7 @@
       },
       {
         "command": "skillInventory.changePat",
-        "title": "Change Personal Access Token (PAT)",
+        "title": "Change Personal Access Token",
         "category": "Skill Inventory"
       },
       {
