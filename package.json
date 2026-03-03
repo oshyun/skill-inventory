@@ -37,7 +37,7 @@
       {
         "view": "skillInventoryView",
         "contents": "No repository configured.\n\n[Setup Repository](command:skillInventory.setupRepository)",
-        "when": "!skillInventory.isLoading"
+        "when": "skillInventory.isReady && !skillInventory.isLoading"
       }
     ],
     "commands": [

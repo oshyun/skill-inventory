@@ -21,6 +21,8 @@ function updateSyncContext(): void {
 export function activate(context: vscode.ExtensionContext) {
 	console.log('Skill Inventory Manager is now active!');
 
+	vscode.commands.executeCommand('setContext', 'skillInventory.isReady', false);
+
 	// Initialize services with extension path for .env file
 	const githubService = new GitHubService(context.extensionPath);
 
@@ -99,6 +101,7 @@ export function activate(context: vscode.ExtensionContext) {
 	skillsTreeProvider.refresh().then(async () => {
 		lastKnownSha = await githubService.getLatestCommitSha();
 		updateDescription();
+		vscode.commands.executeCommand('setContext', 'skillInventory.isReady', true);
 	});
 
 	// Start auto-refresh polling
