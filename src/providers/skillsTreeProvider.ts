@@ -66,7 +66,20 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
             );
         } catch (error) {
             console.error('Error fetching skills:', error);
-            vscode.window.showErrorMessage(`Failed to fetch skills: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            const message = error instanceof Error ? error.message : 'Unknown error';
+            const isAuthError = message.toLowerCase().includes('authenticate') || message.includes('401');
+            if (isAuthError) {
+                vscode.window.showErrorMessage(
+                    'GitHub 인증 실패: PAT(Personal Access Token) 설정이 필요합니다.',
+                    'PAT 설정'
+                ).then(selection => {
+                    if (selection === 'PAT 설정') {
+                        vscode.commands.executeCommand('workbench.action.openSettings', 'skillInventory.source.pat');
+                    }
+                });
+            } else {
+                vscode.window.showErrorMessage(`Failed to fetch skills: ${message}`);
+            }
             this.tree = [];
             this.skills = [];
         } finally {
