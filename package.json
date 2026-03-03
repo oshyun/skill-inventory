@@ -167,7 +167,7 @@
             "type": "array",
             "items": { "type": "string" },
             "default": [],
-            "description": "Skills excluded from sync. These skills will not be updated or deleted locally. Right-click a skill in the tree view to ignore or unignore it."
+            "description": "Skills excluded from sync. These skills will not be updated or deleted locally. Use the skill folder name only — e.g. for '/skills/my-skill', enter 'my-skill'. Right-click a skill in the tree view to ignore or unignore it."
           }
         }
       },
