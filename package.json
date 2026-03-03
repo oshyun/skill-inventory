@@ -152,7 +152,7 @@
       },
       {
         "id": "syncTargets",
-        "title": "Sync Skills Locations",
+        "title": "Target",
         "order": 3,
         "properties": {
           "skillInventory.sync.targets": {
