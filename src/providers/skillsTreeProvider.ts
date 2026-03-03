@@ -43,7 +43,12 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
                     if (!this.githubService.isConfigured()) {
                         this.tree = [];
                         this.skills = [];
-                        // Welcome view already shows "Setup Repository" — no popup needed
+                        showMessageWithAction(
+                            'error',
+                            'No repository configured. Please set a repository URL.',
+                            'Setup Repository',
+                            'skillInventory.setupRepository'
+                        );
                     } else {
                         const result = await this.githubService.fetchTree();
                         this.tree = result.tree;
