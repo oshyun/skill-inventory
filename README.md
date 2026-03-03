@@ -33,7 +33,7 @@ Fetch skills from a GitHub repository and automatically sync them to local paths
 |---|---|
 | `skillInventory.sync.autoSync` | Enable periodic auto sync |
 | `skillInventory.sync.intervalSeconds` | Polling interval in seconds (min: 30) |
-| `skillInventory.sync.removeStaleSkills` | Delete local skills that no longer exist in the remote |
+| `skillInventory.sync.removeStaleSkills` | Delete local skills that no longer exist in the remote (prompts before deletion) |
 
 > **Note:** Regardless of `removeStaleSkills`, any local skill file with the same name as a remote skill will be overwritten on sync. Local edits are not preserved.
 

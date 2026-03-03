@@ -139,7 +139,7 @@
           "skillInventory.sync.removeStaleSkills": {
             "order": 3,
             "type": "boolean",
-            "default": false,
+            "default": true,
             "markdownDescription": "Delete local skills that have been removed from the remote. When disabled, stale skills remain on disk.\n\n⚠️ **Regardless of this setting**, any local skill with the same name as a remote skill will be **overwritten on sync**. Local edits are not preserved."
           }
         }
