@@ -203,16 +203,13 @@
     "bundle:watch": "esbuild src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node --sourcemap --watch",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "lint": "eslint src",
-    "package": "bash scripts/build.sh"
+"package": "bash scripts/build.sh"
   },
   "devDependencies": {
     "@octokit/rest": "^20.1.2",
     "@types/node": "22.x",
     "@types/vscode": "^1.85.0",
     "esbuild": "^0.27.3",
-    "eslint": "^9.39.2",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "^8.54.0"
+    "typescript": "^5.9.3"
   }
 }
