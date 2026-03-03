@@ -69,7 +69,7 @@ export function registerSkillCommands(
         vscode.commands.registerCommand('skillInventory.setupRepository', async () => {
             // Step 1: Repository URL (required)
             const repoUrl = await vscode.window.showInputBox({
-                title: '저장소 설정 (1/3)',
+                title: '저장소 설정 (1/4)',
                 prompt: 'GitHub 저장소 URL을 입력하세요',
                 placeHolder: 'https://github.com/org/repo',
                 ignoreFocusOut: true,
@@ -90,7 +90,7 @@ export function registerSkillCommands(
 
             // Step 2: PAT (optional)
             const pat = await vscode.window.showInputBox({
-                title: '저장소 설정 (2/3)',
+                title: '저장소 설정 (2/4)',
                 prompt: 'Personal Access Token (PAT)을 입력하세요',
                 placeHolder: '비공개 저장소인 경우 입력 (공개 저장소는 비워두세요)',
                 password: true,
@@ -101,7 +101,28 @@ export function registerSkillCommands(
                 return; // User cancelled
             }
 
-            // Step 3: Remove stale skills option
+            // Step 3: Sync target paths
+            const TARGET_PATHS: { label: string; picked: boolean }[] = [
+                { label: '.agents/skills',  picked: false },
+                { label: '.claude/skills',  picked: true  },
+                { label: '.github/skills',  picked: false },
+                { label: '~/.agents/skills', picked: false },
+                { label: '~/.claude/skills', picked: true  },
+                { label: '~/.github/skills', picked: false },
+            ];
+
+            const selectedPaths = await vscode.window.showQuickPick(TARGET_PATHS, {
+                title: '저장소 설정 (3/4)',
+                placeHolder: '동기화할 경로를 선택하세요 (스페이스바로 체크)',
+                canPickMany: true,
+                ignoreFocusOut: true,
+            });
+
+            if (selectedPaths === undefined) {
+                return; // User cancelled
+            }
+
+            // Step 4: Remove stale skills option
             const staleAnswer = await vscode.window.showWarningMessage(
                 '소스 저장소에 없는 스킬을 로컬에서 자동 삭제할까요?\n\n⚠️ 활성화하면 소스 저장소에서 삭제된 스킬이 로컬 동기화 경로에서도 제거됩니다.',
                 { modal: true },
@@ -119,6 +140,15 @@ export function registerSkillCommands(
             if (pat) {
                 await config.update('pat', pat.trim(), vscode.ConfigurationTarget.Global);
             }
+            const targetConfig: Record<string, boolean> = {};
+            for (const { label } of TARGET_PATHS) {
+                targetConfig[label] = selectedPaths.some(p => p.label === label);
+            }
+            await vscode.workspace.getConfiguration('skillInventory').update(
+                'target',
+                targetConfig,
+                vscode.ConfigurationTarget.Global
+            );
             await vscode.workspace.getConfiguration('skillInventory.sync').update(
                 'removeStaleSkills',
                 staleAnswer === '삭제 활성화',
