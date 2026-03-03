@@ -1,13 +1,28 @@
 {
   "name": "skill-inventory",
   "displayName": "Skill Inventory",
-  "description": "Mirror skills from a Git repository to local AI agent reference paths.",
+  "description": "Sync AI agent skills from a Git repository to local workspaces. Manage, browse, and auto-sync Claude/Copilot skill definitions across projects.",
   "version": "0.0.0",
   "publisher": "oshyun",
+  "keywords": [
+    "skill",
+    "skills",
+    "sync",
+    "ai",
+    "agent",
+    "claude",
+    "copilot",
+    "github",
+    "git",
+    "inventory",
+    "prompt",
+    "workflow"
+  ],
   "engines": {
     "vscode": "^1.85.0"
   },
   "categories": [
+    "AI",
     "Other"
   ],
   "activationEvents": [
