@@ -1,12 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-  <!-- git: main commit + branch point + feature branch curve -->
-  <circle cx="9" cy="2.5" r="1.5"/>
-  <line x1="9" y1="4" x2="9" y2="7"/>
-  <circle cx="9" cy="7" r="1.5"/>
-  <path d="M9 4.8 C9 6.5 16 6 16 8.2"/>
-  <circle cx="16" cy="8.2" r="1.5"/>
-  <!-- dynamic bolts (scattered, different heights) -->
-  <polyline points="6 10.5 4.5 13.5 7.5 13.5 6 16.5"/>
-  <polyline points="13 9.5 11.5 13 14.5 13 13 16"/>
-  <polyline points="19 11.5 17.5 14.5 20.5 14.5 19 17.5"/>
+  <!-- git: 두 브랜치가 하나의 branch point에서 분기 -->
+  <circle cx="12" cy="2.5" r="1.5"/>
+  <circle cx="7" cy="8" r="1.5"/>
+  <circle cx="17" cy="8" r="1.5"/>
+  <line x1="11.2" y1="3.7" x2="7.9" y2="6.8"/>
+  <line x1="12.8" y1="3.7" x2="16.1" y2="6.8"/>
+  <!-- 번개: 가로 균등 (x=6,12,18), 세로만 스태거 -->
+  <polyline points="7 11 4.5 14 7.5 14 6 16"/>
+  <polyline points="13 9.5 10.5 12.5 13.5 12.5 12 14.5"/>
+  <polyline points="19 12 16.5 15 19.5 15 18 17"/>
 </svg>

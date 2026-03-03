@@ -145,8 +145,10 @@ export function registerSkillCommands(
             }
 
             // Save PAT first so it is available when subsequent config updates trigger a refresh
-            if (pat) {
+            if (pat.trim()) {
                 await context.secrets.store('skillInventory.pat', pat.trim());
+            } else {
+                await context.secrets.delete('skillInventory.pat');
             }
 
             // Save source settings (each triggers onDidChangeConfiguration → refresh)
