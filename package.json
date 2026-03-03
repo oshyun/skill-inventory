@@ -90,10 +90,6 @@
       ],
       "view/item/context": [
         {
-          "command": "skillInventory.viewSkill",
-          "when": "view == skillInventoryView && viewItem == skill",
-          "group": "inline"
-        },
         {
           "command": "skillInventory.ignoreSkill",
           "when": "view == skillInventoryView && viewItem == skill",
