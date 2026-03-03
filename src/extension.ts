@@ -76,7 +76,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// Listen for configuration changes
 	context.subscriptions.push(
 		vscode.workspace.onDidChangeConfiguration(async (e) => {
-			if (e.affectsConfiguration('skillInventory.github')) {
+			if (e.affectsConfiguration('skillInventory.source')) {
 				githubService.refreshConfig();
 				lastKnownSha = undefined;
 				skillsTreeProvider.refresh();
@@ -119,7 +119,7 @@ export function activate(context: vscode.ExtensionContext) {
 				checkAgentSkillsConfig();
 			}
 			if (e.affectsConfiguration('chat.agentSkillsLocations') ||
-				e.affectsConfiguration('skillInventory.sync.targets.enabled')) {
+				e.affectsConfiguration('skillInventory.target')) {
 				checkAgentSkillsLocations();
 			}
 		})

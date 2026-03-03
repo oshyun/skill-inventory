@@ -10,7 +10,7 @@ export class CopilotService {
 	 * Returns array of enabled sync target paths.
 	 */
 	static getSyncTargets(): string[] {
-		const targets = vscode.workspace.getConfiguration('skillInventory.sync').get<Record<string, boolean>>('targets', {
+		const targets = vscode.workspace.getConfiguration('skillInventory').get<Record<string, boolean>>('target', {
 			'.agents/skills': false,
 			'.claude/skills': true,
 			'.github/skills': false,

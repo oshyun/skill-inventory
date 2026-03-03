@@ -98,25 +98,25 @@
         "title": "Source",
         "order": 2,
         "properties": {
-          "skillInventory.github.repoUrl": {
+          "skillInventory.source.repoUrl": {
             "order": 1,
             "type": "string",
             "default": "",
             "description": "스킬을 가져올 GitHub 저장소 URL (예: https://github.com/org/repo)"
           },
-          "skillInventory.github.pat": {
+          "skillInventory.source.pat": {
             "order": 2,
             "type": "string",
             "default": "",
             "description": "GitHub Personal Access Token (PAT). 비공개 저장소 접속 시 필요합니다."
           },
-          "skillInventory.github.branch": {
+          "skillInventory.source.branch": {
             "order": 3,
             "type": "string",
             "default": "master",
             "description": "읽어올 브랜치 이름"
           },
-          "skillInventory.github.skillsPath": {
+          "skillInventory.source.skillsPath": {
             "order": 4,
             "type": "string",
             "default": "/skills",
@@ -155,7 +155,7 @@
         "title": "Target",
         "order": 3,
         "properties": {
-          "skillInventory.sync.targets": {
+          "skillInventory.target": {
             "order": 1,
             "type": "object",
             "additionalProperties": {

@@ -102,7 +102,7 @@ export function registerSkillCommands(
             }
 
             // Save to global settings
-            const config = vscode.workspace.getConfiguration('skillInventory.github');
+            const config = vscode.workspace.getConfiguration('skillInventory.source');
             await config.update('repoUrl', repoUrl.trim(), vscode.ConfigurationTarget.Global);
             if (pat) {
                 await config.update('pat', pat.trim(), vscode.ConfigurationTarget.Global);

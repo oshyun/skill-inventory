@@ -81,7 +81,7 @@ export class GitHubService {
     private loadConfig(): void {
         try {
             // 1) Try VS Code settings first
-            const vsConfig = vscode.workspace.getConfiguration('skillInventory.github');
+            const vsConfig = vscode.workspace.getConfiguration('skillInventory.source');
             const settingsRepoUrl = vsConfig.get<string>('repoUrl', '');
             const settingsPat = vsConfig.get<string>('pat', '');
 

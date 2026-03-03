@@ -221,7 +221,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
     }
 
     private getSourceLabel(): string {
-        const config = vscode.workspace.getConfiguration('skillInventory.github');
+        const config = vscode.workspace.getConfiguration('skillInventory.source');
         const repoUrl = config.get<string>('repoUrl', '');
         const branch = config.get<string>('branch', 'main');
 
