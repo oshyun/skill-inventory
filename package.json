@@ -134,7 +134,7 @@
             "type": "number",
             "default": 30,
             "minimum": 30,
-            "markdownDescription": "변경 감지 주기(초). `sync.autoSync`가 켜져 있을 때만 동작합니다."
+            "description": "변경 감지 주기(초). sync.autoSync가 켜져 있을 때만 유효합니다."
           },
           "skillInventory.sync.removeStaleSkills": {
             "order": 3,
