@@ -67,6 +67,8 @@ export class CopilotService {
 		// Track skill root paths so cleanStale doesn't recurse into them
 		const skillRoots = new Set<string>();
 
+		const ignoredSkills = CopilotService.getIgnoredSkills();
+
 		for (const skill of skills) {
 			const localPath = skill.localPath || skill.id;
 			skillRoots.add(localPath);
@@ -74,6 +76,11 @@ export class CopilotService {
 			const parts = localPath.split('/');
 			for (let i = 1; i <= parts.length; i++) {
 				desiredPaths.add(parts.slice(0, i).join('/'));
+			}
+
+			// Skip ignored skills — keep their paths in desiredPaths so they're not deleted
+			if (ignoredSkills.includes(localPath)) {
+				continue;
 			}
 
 			const dirUri = vscode.Uri.joinPath(skillsUri, localPath);
@@ -170,6 +177,12 @@ export class CopilotService {
 				}
 			}
 		}
+	}
+
+	static getIgnoredSkills(): string[] {
+		return vscode.workspace
+			.getConfiguration('skillInventory.sync')
+			.get<string[]>('ignoredSkills', []);
 	}
 
 	static isAutoSyncEnabled(): boolean {

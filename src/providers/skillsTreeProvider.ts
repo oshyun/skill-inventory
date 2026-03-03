@@ -23,7 +23,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
         this.treeView = treeView;
     }
 
-    public async refresh(): Promise<void> {
+    public async refresh(forceSync = false): Promise<void> {
         if (this.isLoading) {
             return;
         }
@@ -88,7 +88,7 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
             }
             this._onDidChangeTreeData.fire();
 
-            if (this.skills.length > 0 && CopilotService.isAutoSyncEnabled()) {
+            if (this.skills.length > 0 && (CopilotService.isAutoSyncEnabled() || forceSync)) {
                 try {
                     await CopilotService.syncSkills(this.skills);
                 } catch (error) {
@@ -108,11 +108,12 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
 
         if (element.type === 'skill') {
             const skill = element.skill;
+            const ignored = CopilotService.getIgnoredSkills().includes(skill.localPath || skill.id);
             const item = new vscode.TreeItem(skill.name, vscode.TreeItemCollapsibleState.Collapsed);
             item.tooltip = skill.description || skill.name;
-            item.description = skill.tags?.join(', ') || '';
-            item.iconPath = new vscode.ThemeIcon('symbol-method');
-            item.contextValue = 'skill';
+            item.description = ignored ? '(ignored)' : (skill.tags?.join(', ') || '');
+            item.iconPath = new vscode.ThemeIcon(ignored ? 'circle-slash' : 'symbol-method');
+            item.contextValue = ignored ? 'skill-ignored' : 'skill';
             return item;
         }
 
@@ -230,6 +231,11 @@ export class SkillsTreeProvider implements vscode.TreeDataProvider<TreeNode> {
 
     getParent(_element: TreeNode): vscode.ProviderResult<TreeNode> {
         return undefined;
+    }
+
+    /** Refresh only the tree UI without re-fetching from remote. */
+    public refreshTree(): void {
+        this._onDidChangeTreeData.fire();
     }
 
     public getSkills(): Skill[] {

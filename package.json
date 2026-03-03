@@ -63,6 +63,16 @@
         "command": "skillInventory.setupRepository",
         "title": "Setup Repository",
         "category": "Skill Inventory"
+      },
+      {
+        "command": "skillInventory.ignoreSkill",
+        "title": "Ignore Skill",
+        "category": "Skill Inventory"
+      },
+      {
+        "command": "skillInventory.unignoreSkill",
+        "title": "Unignore Skill",
+        "category": "Skill Inventory"
       }
     ],
     "menus": {
@@ -83,6 +93,16 @@
           "command": "skillInventory.viewSkill",
           "when": "view == skillInventoryView && viewItem == skill",
           "group": "inline"
+        },
+        {
+          "command": "skillInventory.ignoreSkill",
+          "when": "view == skillInventoryView && viewItem == skill",
+          "group": "1_sync"
+        },
+        {
+          "command": "skillInventory.unignoreSkill",
+          "when": "view == skillInventoryView && viewItem == skill-ignored",
+          "group": "1_sync"
         }
       ]
     },
@@ -141,6 +161,13 @@
             "type": "boolean",
             "default": true,
             "markdownDescription": "When enabled, skills removed from the remote will be flagged for deletion. **You will always be prompted to confirm before anything is deleted.**\n\nWhen disabled, stale skills remain on disk and a warning is shown instead."
+          },
+          "skillInventory.sync.ignoredSkills": {
+            "order": 4,
+            "type": "array",
+            "items": { "type": "string" },
+            "default": [],
+            "description": "Skills excluded from sync. These skills will not be updated or deleted locally. Right-click a skill in the tree view to ignore or unignore it."
           }
         }
       },

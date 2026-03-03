@@ -152,13 +152,12 @@ export function registerSkillCommands(
                 return; // User cancelled
             }
 
-            // Save to global settings — PAT saved before repoUrl to prevent auth failure
-            // on the onDidChangeConfiguration refresh triggered by repoUrl save
+            // Save to global settings
             const config = vscode.workspace.getConfiguration('skillInventory.source');
+            await config.update('repoUrl', repoUrl.trim(), vscode.ConfigurationTarget.Global);
             if (pat) {
                 await config.update('pat', pat.trim(), vscode.ConfigurationTarget.Global);
             }
-            await config.update('repoUrl', repoUrl.trim(), vscode.ConfigurationTarget.Global);
             const targetConfig: Record<string, boolean> = {};
             for (const { label } of TARGET_PATHS) {
                 targetConfig[label] = selectedPaths.some(p => p.label === label);
@@ -199,7 +198,37 @@ export function registerSkillCommands(
             }
 
             vscode.window.showInformationMessage('Repository setup complete.');
-            await vscode.commands.executeCommand('skillInventory.refresh');
+            await skillsTreeProvider.refresh(true);
+        })
+    );
+
+    // Ignore skill command
+    context.subscriptions.push(
+        vscode.commands.registerCommand('skillInventory.ignoreSkill', async (node: TreeNode) => {
+            if (!node || node.type !== 'skill') {
+                return;
+            }
+            const localPath = node.skill.localPath || node.skill.id;
+            const config = vscode.workspace.getConfiguration('skillInventory.sync');
+            const ignored = config.get<string[]>('ignoredSkills', []);
+            if (!ignored.includes(localPath)) {
+                await config.update('ignoredSkills', [...ignored, localPath], vscode.ConfigurationTarget.Global);
+            }
+            skillsTreeProvider.refreshTree();
+        })
+    );
+
+    // Unignore skill command
+    context.subscriptions.push(
+        vscode.commands.registerCommand('skillInventory.unignoreSkill', async (node: TreeNode) => {
+            if (!node || node.type !== 'skill') {
+                return;
+            }
+            const localPath = node.skill.localPath || node.skill.id;
+            const config = vscode.workspace.getConfiguration('skillInventory.sync');
+            const ignored = config.get<string[]>('ignoredSkills', []);
+            await config.update('ignoredSkills', ignored.filter(s => s !== localPath), vscode.ConfigurationTarget.Global);
+            skillsTreeProvider.refreshTree();
         })
     );
 
