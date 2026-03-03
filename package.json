@@ -182,7 +182,8 @@
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test",
-    "package": "bash install-latest-vsix.sh"
+    "package": "bash build.sh",
+    "package:install": "bash build.sh --install"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
