@@ -163,7 +163,7 @@
               "~/.claude/skills": true,
               "~/.github/skills": false
             },
-            "description": "Local paths to sync skills into. Set a path to true to enable it."
+            "description": "Local paths to sync skills into."
           }
         }
       }
