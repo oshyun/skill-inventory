@@ -162,12 +162,12 @@
               "type": "boolean"
             },
             "default": {
-              ".claude/skills": true,
-              "~/.claude/skills": true,
-              ".github/skills": false,
-              "~/.github/skills": false,
               ".agents/skills": false,
-              "~/.agents/skills": false
+              ".claude/skills": true,
+              ".github/skills": false,
+              "~/.agents/skills": false,
+              "~/.claude/skills": true,
+              "~/.github/skills": false
             },
             "markdownDescription": "동기화 대상 경로 목록\n\n예: `{\".claude/skills\": true, \"~/.config/my-tool/skills\": true}`"
           }

@@ -11,12 +11,12 @@ export class CopilotService {
 	 */
 	static getSyncTargets(): string[] {
 		const targets = vscode.workspace.getConfiguration('skillInventory.sync').get<Record<string, boolean>>('targets', {
-			'.claude/skills': true,
-			'~/.claude/skills': true,
-			'.github/skills': false,
-			'~/.github/skills': false,
 			'.agents/skills': false,
+			'.claude/skills': true,
+			'.github/skills': false,
 			'~/.agents/skills': false,
+			'~/.claude/skills': true,
+			'~/.github/skills': false,
 		});
 		return Object.entries(targets)
 			.filter(([, enabled]) => enabled)
