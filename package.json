@@ -1,7 +1,7 @@
 {
   "name": "skill-inventory",
   "displayName": "Skill Inventory",
-  "description": "Sync AI agent skills from a Git repository to local workspaces. Manage, browse, and auto-sync Claude/Copilot skill definitions across projects.",
+  "description": "Sync AI agent skills from a Git repository to local workspaces. Manage, browse, and auto-sync skill definitions for any AI coding assistant.",
   "version": "0.0.0",
   "publisher": "oshyun",
   "keywords": [
@@ -10,8 +10,8 @@
     "sync",
     "ai",
     "agent",
-    "claude",
-    "copilot",
+    "assistant",
+    "llm",
     "github",
     "git",
     "inventory",
