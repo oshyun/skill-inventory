@@ -79,18 +79,17 @@ export class GitHubService {
     }
 
     /**
-     * Load configuration from VS Code settings, falling back to .env file
+     * Load configuration synchronously from VS Code settings or .env file.
+     * PAT is NOT loaded here for the settings case — call refreshConfig() to load it from SecretStorage.
      */
-    private loadConfig(): void {
+    private loadConfigSync(): void {
         try {
-            // 1) Try VS Code settings first
+            // 1) Try VS Code settings first (PAT excluded — loaded via SecretStorage in refreshConfig)
             const vsConfig = vscode.workspace.getConfiguration('skillInventory.source');
             const settingsRepoUrl = vsConfig.get<string>('repoUrl', '');
-            const settingsPat = vsConfig.get<string>('pat', '');
 
             if (settingsRepoUrl) {
                 const { baseUrl, owner, repo } = this.parseRepoUrl(settingsRepoUrl);
-                const token = settingsPat ? this.parsePat(settingsPat) : '';
                 const branch = vsConfig.get<string>('branch', 'main');
                 const skillsPathRaw = vsConfig.get<string>('skillsPath', 'skills');
 
@@ -100,11 +99,12 @@ export class GitHubService {
                     repo,
                     branch,
                     skillsPath: skillsPathRaw === '/' ? '' : skillsPathRaw,
-                    pat: token,
+                    pat: '',
                 };
+                this.configFromSettings = true;
 
+                // Octokit created without auth; will be recreated with PAT after refreshConfig()
                 this.octokit = new Octokit({
-                    auth: this.config.pat || undefined,
                     baseUrl: this.config.baseUrl,
                 });
 
@@ -112,7 +112,7 @@ export class GitHubService {
                 return;
             }
 
-            // 2) Fallback: .env file
+            // 2) Fallback: .env file (PAT stored in file, not SecretStorage)
             const possiblePaths = [
                 path.join(this.extensionPath, '.env'),
                 path.join(vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '', '.env'),
@@ -132,6 +132,7 @@ export class GitHubService {
             if (!envContent) {
                 console.log('No configuration found (settings empty, no .env file)');
                 this.config = null;
+                this.configFromSettings = false;
                 return;
             }
 
@@ -144,6 +145,7 @@ export class GitHubService {
             if (!repoUrl || !pat) {
                 console.error('.env file missing required fields (repo_url, pat)');
                 this.config = null;
+                this.configFromSettings = false;
                 return;
             }
 
@@ -158,6 +160,7 @@ export class GitHubService {
                 skillsPath: env['skills_path'] === '/' ? '' : (env['skills_path'] || 'skills'),
                 pat: token,
             };
+            this.configFromSettings = false;
 
             this.octokit = new Octokit({
                 auth: this.config.pat,
@@ -168,7 +171,38 @@ export class GitHubService {
         } catch (error) {
             console.error('Failed to load config:', error);
             this.config = null;
+            this.configFromSettings = false;
         }
+    }
+
+    /**
+     * For settings-based config, load PAT from SecretStorage (with migration from old settings.pat).
+     * Must be called after loadConfigSync() to fully initialize the service.
+     */
+    private async loadPatFromSecrets(): Promise<void> {
+        if (!this.config || !this.configFromSettings) {
+            return;
+        }
+
+        let pat = await this.secrets.get('skillInventory.pat');
+
+        if (!pat) {
+            // One-time migration: if PAT exists in old settings.json, move it to SecretStorage
+            const vsConfig = vscode.workspace.getConfiguration('skillInventory.source');
+            const legacyPat = vsConfig.get<string>('pat', '');
+            if (legacyPat) {
+                await this.secrets.store('skillInventory.pat', legacyPat);
+                await vsConfig.update('pat', undefined, vscode.ConfigurationTarget.Global);
+                pat = legacyPat;
+                console.log('Migrated PAT from settings to SecretStorage');
+            }
+        }
+
+        this.config.pat = pat ? this.parsePat(pat) : '';
+        this.octokit = new Octokit({
+            auth: this.config.pat || undefined,
+            baseUrl: this.config.baseUrl,
+        });
     }
 
     /**
@@ -186,10 +220,11 @@ export class GitHubService {
     }
 
     /**
-     * Refresh configuration from .env file
+     * Reload configuration and PAT from SecretStorage.
      */
-    public refreshConfig(): void {
-        this.loadConfig();
+    public async refreshConfig(): Promise<void> {
+        this.loadConfigSync();
+        await this.loadPatFromSecrets();
     }
 
     /**

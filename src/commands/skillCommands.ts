@@ -156,7 +156,7 @@ export function registerSkillCommands(
             const config = vscode.workspace.getConfiguration('skillInventory.source');
             await config.update('repoUrl', repoUrl.trim(), vscode.ConfigurationTarget.Global);
             if (pat) {
-                await config.update('pat', pat.trim(), vscode.ConfigurationTarget.Global);
+                await context.secrets.store('skillInventory.pat', pat.trim());
             }
             const targetConfig: Record<string, boolean> = {};
             for (const { label } of TARGET_PATHS) {

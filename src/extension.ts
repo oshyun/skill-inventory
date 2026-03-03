@@ -18,13 +18,14 @@ function updateSyncContext(): void {
 /**
  * This method is called when your extension is activated
  */
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
 	console.log('Skill Inventory Manager is now active!');
 
 	vscode.commands.executeCommand('setContext', 'skillInventory.isReady', false);
 
-	// Initialize services with extension path for .env file
-	const githubService = new GitHubService(context.extensionPath);
+	// Initialize services with extension path for .env file and SecretStorage for PAT
+	const githubService = new GitHubService(context.extensionPath, context.secrets);
+	await githubService.refreshConfig();
 
 	// Initialize tree view provider
 	const skillsTreeProvider = new SkillsTreeProvider(githubService);
@@ -45,11 +46,22 @@ export function activate(context: vscode.ExtensionContext) {
 	// Register all commands
 	registerSkillCommands(context, githubService, skillsTreeProvider);
 
+	// Reload config when PAT changes in SecretStorage
+	context.subscriptions.push(
+		context.secrets.onDidChange(async (e) => {
+			if (e.key === 'skillInventory.pat') {
+				await githubService.refreshConfig();
+				lastKnownSha = undefined;
+				skillsTreeProvider.refresh();
+			}
+		})
+	);
+
 	// Listen for configuration changes
 	context.subscriptions.push(
 		vscode.workspace.onDidChangeConfiguration(async (e) => {
 			if (e.affectsConfiguration('skillInventory.source')) {
-				githubService.refreshConfig();
+				await githubService.refreshConfig();
 				lastKnownSha = undefined;
 				skillsTreeProvider.refresh();
 			}
