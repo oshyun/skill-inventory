@@ -220,33 +220,12 @@ export class GitHubService {
         if (conflicts.length > 0) {
             const answer = await vscode.window.showErrorMessage(
                 `Whitelist/Blacklist conflict: ${conflicts.join(', ')}. Remove these from one of the lists to continue.`,
-                'Open Settings',
-                'Keep Local',
-                'Always Skip'
+                'Open Settings'
             );
             if (answer === 'Open Settings') {
                 vscode.commands.executeCommand('workbench.action.openSettings', 'skillInventory.source.skillWhitelist');
-                return { tree: [], skills: [] };
-            } else if (answer === 'Keep Local') {
-                // Add to keepLocalSkills and exclude from this fetch (blacklist wins)
-                const syncConfig = vscode.workspace.getConfiguration('skillInventory.sync');
-                const kept = syncConfig.get<string[]>('keepLocalSkills', []);
-                const toAdd = conflicts.filter(s => !kept.includes(s));
-                if (toAdd.length > 0) {
-                    await syncConfig.update('keepLocalSkills', [...kept, ...toAdd], vscode.ConfigurationTarget.Global);
-                }
-                blacklist.push(...conflicts.filter(s => !blacklist.includes(s)));
-            } else if (answer === 'Always Skip') {
-                // Remove conflicting skills from whitelist permanently (blacklist wins forever)
-                await sourceConfig.update(
-                    'skillWhitelist',
-                    whitelist.filter(s => !conflicts.includes(s)),
-                    vscode.ConfigurationTarget.Global
-                );
-                blacklist.push(...conflicts.filter(s => !blacklist.includes(s)));
-            } else {
-                return { tree: [], skills: [] };
             }
+            return { tree: [], skills: [] };
         }
 
         const walk = async (dirPath: string, relativeBase: string): Promise<TreeNode[]> => {
