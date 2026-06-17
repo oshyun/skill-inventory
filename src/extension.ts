@@ -139,7 +139,7 @@ function updateDescription(changed?: boolean): void {
 function getPollingInterval(): number {
 	return vscode.workspace
 		.getConfiguration('skillInventory.sync')
-		.get<number>('intervalSeconds', 30);
+		.get<number>('intervalSeconds', 300);
 }
 
 function startPolling(githubService: GitHubService, provider: SkillsTreeProvider): void {

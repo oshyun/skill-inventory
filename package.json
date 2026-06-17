@@ -170,7 +170,7 @@
           "skillInventory.sync.intervalSeconds": {
             "order": 2,
             "type": "number",
-            "default": 30,
+            "default": 300,
             "minimum": 30,
             "description": "Polling interval in seconds. Only effective when sync.autoSync is enabled."
           },
