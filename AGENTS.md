@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+이 레포에서 작업하는 AI 에이전트(Claude Code 등)를 위한 가이드.
 
 ## 작업 규칙
 
@@ -49,27 +49,6 @@ npm run package:install
 - VSIX 패키징 시 `--no-dependencies` 옵션 금지 — `@octokit/rest` 런타임 의존성 누락으로 활성화 실패
 - `npm run compile` 만으로는 `.vsix` 미생성, 반드시 `npm run package` 사용
 - 설치 후 `Ctrl+Shift+P` → `Developer: Reload Window` 리로드 필요
-
-## 마켓플레이스 게시 (배포)
-
-로컬 `.vsix` 설치 외에, VS Code Marketplace에 게시(배포)할 수 있다. 게시 관리 페이지:
-
-- https://marketplace.visualstudio.com/manage/publishers
-
-`package.json`의 `publisher`는 `oshyun` 이며, Marketplace의 publisher ID와 일치해야 한다.
-
-### 게시 절차
-
-1. **Publisher 생성**: 위 관리 페이지에서 publisher(`oshyun`)를 만든다. (최초 1회)
-2. **Azure DevOps PAT 발급**: `Marketplace > Manage` 스코프의 Personal Access Token을 발급받는다. (Marketplace 게시는 Azure DevOps PAT로 인증한다)
-3. **게시** — 두 가지 방법 중 택1:
-   - **CLI**: `npx vsce login oshyun` (PAT 입력) 후 `npx vsce publish`
-   - **수동 업로드**: 관리 페이지에서 `npm run package`로 만든 `.vsix` 파일을 직접 업로드
-
-### 주의사항
-
-- `npm run package`(=`scripts/build.sh`)는 마지막에 `git restore package.json`으로 버전 반영분을 원복하므로, `vsce publish`로 버전 자동 증가를 쓰려면 별도 절차가 필요하다. 가장 단순한 방법은 `.vsix`를 만들어 관리 페이지에 **수동 업로드**하는 것이다.
-- Marketplace 게시용 PAT(Azure DevOps)는 소스 동기화용 GitHub PAT(`skillInventory.source`)와 완전히 별개다.
 
 ## 아키텍처
 
