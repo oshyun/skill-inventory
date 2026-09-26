@@ -2,6 +2,21 @@
 
 이 레포에서 작업하는 AI 에이전트(Claude Code 등)를 위한 가이드.
 
+## Git 커밋 author 정보
+
+모든 커밋의 author/committer는 아래로 통일한다 (레포 로컬 git config에 설정됨):
+
+- **이름**: `oshyun`
+- **이메일**: `osh218@gmail.com`
+
+개인 이메일(`navercorp.com` 등)이나 실명이 아닌 다른 이름으로 커밋하지 않는다. 커밋 author가 다르게 잡히면 `git config user.name oshyun && git config user.email osh218@gmail.com`으로 먼저 맞춘다.
+
+### 배경 (2026-09)
+
+- 회사 이메일(`sh.o@navercorp.com`)로 커밋된 히스토리 161개를 `git filter-branch`로 전부 `oshyun <osh218@gmail.com>`으로 재작성했다.
+- 같은 작업에서 초기 커밋들에 하드코딩돼 있던 GitHub PAT(`ghp_...`)와 `.env` 파일도 히스토리에서 완전히 제거했다 (GitHub push protection 차단 원인).
+- 커밋에 시크릿(PAT, 토큰, 개인 이메일 등)을 포함하지 않는다. push 시 GitHub Push Protection이 감지해 차단된다.
+
 ## 작업 규칙
 
 - **단위 작업이 끝날 때마다 반드시 자동으로 git commit 한다.** 커밋 메시지는 변경 내용을 간결하게 한국어로 작성한다.
